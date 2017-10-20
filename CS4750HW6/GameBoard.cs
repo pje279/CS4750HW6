@@ -330,12 +330,12 @@ namespace CS4750HW6
             } //Endfor (int i = 0; i < possibleChoices.Count; i++)
         } //End 
 
-        private void degreeHeuristicGroup(List<Group> possibleChoices)
+        private List<int> degreeHeuristicGroup(List<Group> possibleChoices)
         {
             //Declare variables
             int degree = int.MaxValue; //Want a smaller number. Indicates there are fewer valid arrangements of the values in the groups domain
             int tempDegree = 0;
-            int numPossiblePlacings = 0;
+            List<int> newPossibleChoices = new List<int>();
 
             for (int i = 0; i < possibleChoices.Count; i++)
             {
@@ -344,24 +344,27 @@ namespace CS4750HW6
                     foreach (Point p in possibleChoices[i].NodeLocations)
                     {
                         tempDegree = 0;
-                        numPossiblePlacings = 0;
 
                         if (this.Board[p.X, p.Y].Domain.Exists(x => x == i + 1))
                         {
                             tempDegree += 1;
-                        } //End 
-                    } //End 
-                } //End 
+                        } //End if (this.Board[p.X, p.Y].Domain.Exists(x => x == i + 1))
+                    } //End foreach (Point p in possibleChoices[i].NodeLocations)
+                } //End for (int j = 0; j < 9; j++)
 
                 if (tempDegree < degree)
                 {
+                    newPossibleChoices.Clear();
+                    newPossibleChoices.Add(i);
                     degree = tempDegree;
-                } //End 
+                } //End if (tempDegree < degree)
                 else if (tempDegree == degree)
                 {
-
-                } //End 
+                    newPossibleChoices.Add(i);
+                } //End else if (tempDegree == degree)
             } //Endfor (int i = 0; i < possibleChoices.Count; i++)
+
+            return newPossibleChoices;
         } //End 
 
         private bool isValidPosition(Point pos)
