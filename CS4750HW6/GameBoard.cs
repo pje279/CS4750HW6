@@ -24,6 +24,8 @@ namespace CS4750HW6
             initBoard(board);
             initGroups();
             initNodes();
+
+            var x = chooseVariable();
         } //End 
 
         /***************METHODS***************/
@@ -52,11 +54,12 @@ namespace CS4750HW6
 
             for (int i = 0; i < 9; i++)
             {
-                this.Squares.Add(new Square());
-                this.Rows.Add(new Row());
-                this.Columns.Add(new Column());
+                this.Squares.Add(new Square(i));
+                this.Rows.Add(new Row(i));
+                this.Columns.Add(new Column(i));
             } //End for (int i = 0; i < 9; i++)
 
+            //Determine what values are already present in each group
             for (int j = 0; j < this.Board.GetLength(1); j++)
             {
                 for (int i = 0; i < this.Board.GetLength(0); i++)
@@ -64,21 +67,26 @@ namespace CS4750HW6
                     if (this.Board[i,j].Value != 0)
                     {
                         this.Rows[j].PlacedVals.Add(this.Board[i, j].Value);
+                        this.Rows[j].Nodes.Add(this.Board[i,j]);
                         this.Columns[i].PlacedVals.Add(this.Board[i, j].Value);
+                        this.Columns[i].Nodes.Add(this.Board[i, j]);
 
                         if (i < 3)
                         {
                             if (j < 3)
                             {
                                 this.Squares[0].PlacedVals.Add(this.Board[i, j].Value);
+                                this.Squares[0].Nodes.Add(this.Board[i, j]);
                             } //End if (j < 3)
                             else if (j < 6)
                             {
                                 this.Squares[3].PlacedVals.Add(this.Board[i, j].Value);
+                                this.Squares[3].Nodes.Add(this.Board[i, j]);
                             } //End else if (j < 6)
                             else if (j < 9)
                             {
                                 this.Squares[6].PlacedVals.Add(this.Board[i, j].Value);
+                                this.Squares[6].Nodes.Add(this.Board[i, j]);
                             } //End else if (j < 9)
                         } //End if (i < 3)
                         else if (i < 6)
@@ -86,14 +94,17 @@ namespace CS4750HW6
                             if (j < 3)
                             {
                                 this.Squares[1].PlacedVals.Add(this.Board[i, j].Value);
+                                this.Squares[1].Nodes.Add(this.Board[i, j]);
                             } //End if (j < 3)
                             else if (j < 6)
                             {
                                 this.Squares[4].PlacedVals.Add(this.Board[i, j].Value);
+                                this.Squares[4].Nodes.Add(this.Board[i, j]);
                             } //End else if (j < 6)
                             else if (j < 9)
                             {
                                 this.Squares[7].PlacedVals.Add(this.Board[i, j].Value);
+                                this.Squares[7].Nodes.Add(this.Board[i, j]);
                             } //End else if (j < 9)
                         } //End else if (i < 6)
                         else if (i < 9)
@@ -101,19 +112,81 @@ namespace CS4750HW6
                             if (j < 3)
                             {
                                 this.Squares[2].PlacedVals.Add(this.Board[i, j].Value);
+                                this.Squares[2].Nodes.Add(this.Board[i, j]);
                             } //End if (j < 3)
                             else if (j < 6)
                             {
                                 this.Squares[5].PlacedVals.Add(this.Board[i, j].Value);
+                                this.Squares[5].Nodes.Add(this.Board[i, j]);
                             } //End else if (j < 6)
                             else if (j < 9)
                             {
                                 this.Squares[8].PlacedVals.Add(this.Board[i, j].Value);
+                                this.Squares[8].Nodes.Add(this.Board[i, j]);
                             } //End else if (j < 9)
                         } //End else if (i < 9)
                     } //End if (this.Board[i,j].Value != 0)
+                    else
+                    {
+                        this.Rows[j].Nodes.Add(this.Board[i, j]);
+                        this.Columns[i].Nodes.Add(this.Board[i, j]);
+
+                        if (i < 3)
+                        {
+                            if (j < 3)
+                            {
+                                this.Squares[0].Nodes.Add(this.Board[i, j]);
+                            } //End if (j < 3)
+                            else if (j < 6)
+                            {
+                                this.Squares[3].Nodes.Add(this.Board[i, j]);
+                            } //End else if (j < 6)
+                            else if (j < 9)
+                            {
+                                this.Squares[6].Nodes.Add(this.Board[i, j]);
+                            } //End else if (j < 9)
+                        } //End if (i < 3)
+                        else if (i < 6)
+                        {
+                            if (j < 3)
+                            {
+                                this.Squares[1].Nodes.Add(this.Board[i, j]);
+                            } //End if (j < 3)
+                            else if (j < 6)
+                            {
+                                this.Squares[4].Nodes.Add(this.Board[i, j]);
+                            } //End else if (j < 6)
+                            else if (j < 9)
+                            {
+                                this.Squares[7].Nodes.Add(this.Board[i, j]);
+                            } //End else if (j < 9)
+                        } //End else if (i < 6)
+                        else if (i < 9)
+                        {
+                            if (j < 3)
+                            {
+                                this.Squares[2].Nodes.Add(this.Board[i, j]);
+                            } //End if (j < 3)
+                            else if (j < 6)
+                            {
+                                this.Squares[5].Nodes.Add(this.Board[i, j]);
+                            } //End else if (j < 6)
+                            else if (j < 9)
+                            {
+                                this.Squares[8].Nodes.Add(this.Board[i, j]);
+                            } //End else if (j < 9)
+                        } //End else if (i < 9)
+                    } //End else
                 } //End for (int i = 0; i < 5; i++)
             } //End for (int j = 0; j < 5; j ++)
+
+            //Determine the each groups' respective domain
+            for (int i = 0; i < 9; i++)
+            {
+                this.Rows[i].determineDomain();
+                this.Columns[i].determineDomain();
+                this.Squares[i].determineDomain();
+            } //End for (int i = 0; i < 9; i++)
         } //End private void initGroups()
 
         private void initNodes()
@@ -184,32 +257,30 @@ namespace CS4750HW6
             Node node = this.Board[pos.X, pos.Y];
 
             //Determine Row constraints
-            for (int i = 0; i < this.Rows[node.RowID].Domain.Count; i++)
+            //for (int i = 0; i < this.Rows[node.RowID].Domain.Count; i++)
+            for (int i = 0; i < this.Rows[node.RowID].PlacedVals.Count; i++)
             {
-                //node.RowConstraint.Add(this.Rows[node.RowID].Domain[i]);
-                if (!node.Constraints.Exists(x => x == this.Rows[node.RowID].Domain[i]))
+                if (!node.Constraints.Exists(x => x == this.Rows[node.RowID].PlacedVals[i]))
                 {
-                    node.Constraints.Add(this.Rows[node.RowID].Domain[i]);
+                    node.Constraints.Add(this.Rows[node.RowID].PlacedVals[i]);
                 } //End if (node.Constraints.Exists(x => x != this.Rows[node.RowID].Domain[i]))
             } //End for (int i = 0; i < this.Rows[node.RowID].Domain.Count; i++)
 
             //Determine Column constraints
-            for (int i = 0; i < this.Columns[node.ColID].Domain.Count; i++)
+            for (int i = 0; i < this.Columns[node.ColID].PlacedVals.Count; i++)
             {
-                //node.ColConstraint.Add(this.Columns[node.ColID].Domain[i]);
-                if (!node.Constraints.Exists(x => x == this.Columns[node.ColID].Domain[i]))
+                if (!node.Constraints.Exists(x => x == this.Columns[node.ColID].PlacedVals[i]))
                 {
-                    node.Constraints.Add(this.Columns[node.ColID].Domain[i]);
+                    node.Constraints.Add(this.Columns[node.ColID].PlacedVals[i]);
                 } //End if (!node.Constraints.Exists(x => x == this.Columns[node.ColID].Domain[i]))
             } //End for (int i = 0; i < this.Columns[node.ColID].Domain.Count; i++)
 
             //Determine Square constraints
-            for (int i = 0; i < this.Squares[node.SquareID].Domain.Count; i++)
+            for (int i = 0; i < this.Squares[node.SquareID].PlacedVals.Count; i++)
             {
-                //node.SquareConstraint.Add(this.Squares[node.SquareID].Domain[i]);
-                if (!node.Constraints.Exists(x => x == this.Squares[node.SquareID].Domain[i]))
+                if (!node.Constraints.Exists(x => x == this.Squares[node.SquareID].PlacedVals[i]))
                 {
-                    node.Constraints.Add(this.Squares[node.SquareID].Domain[i]);
+                    node.Constraints.Add(this.Squares[node.SquareID].PlacedVals[i]);
                 } //End if (!node.Constraints.Exists(x => x == this.Squares[node.SquareID].Domain[i]))
             } //End for (int i = 0; i < this.Squares[node.SquareID].Domain.Count; i++)
 
@@ -222,48 +293,63 @@ namespace CS4750HW6
         private Point chooseVariable()
         {
             //Declare variables
+            Group group = null;
             Point returnPos = new Point(-1, -1);
-            List<Group> possibleChoices = null;
+            List<Group> possibleGroups = null;
+            List<Point> possibleNodes = null;
 
-            possibleChoices = mrvGroups();
 
-            if (possibleChoices.Count > 0)
+            possibleGroups = mrvGroups();
+
+            if (possibleGroups.Count > 0)
             {
-                if (possibleChoices.Count == 1)
+                if (possibleGroups.Count > 1)
                 {
+                    possibleGroups = degreeHeuristicGroup(possibleGroups);
+                } //End 
+
+                if (possibleGroups.Count > 1)
+                {
+                    Random rand = new Random();
+                    group = possibleGroups[rand.Next(0, possibleGroups.Count - 1)];
+                } //End 
+
+                possibleNodes = mrvNode(group);
+
+                if (possibleNodes.Count > 0)
+                {
+                    if (possibleNodes.Count > 1)
+                    {
+                        possibleNodes = degreeHeuristicNode(possibleNodes);
+                    } //End 
+
+
 
                 } //End 
-                else
-                {
-
-                } //End else
             } //End 
 
             return returnPos;
         } //End 
 
-        private List<Point> mrvNode()
+        private List<Point> mrvNode(Group group)
         {
             //Declare variables
             int MRV = int.MaxValue;
             List<Point> possibleChoices = new List<Point>();
 
-            for (int j = 0; j < this.Board.GetLength(1); j++)
+            for (int i = 0; i < group.OpenNodeLocations.Count; i++)
             {
-                for (int i = 0; i < this.Board.GetLength(0); i++)
+                if (this.Board[group.OpenNodeLocations[i].X, group.OpenNodeLocations[i].Y].Domain.Count < MRV)
                 {
-                    if (this.Board[i,j].Domain.Count < MRV)
-                    {
-                        MRV = this.Board[i, j].Domain.Count;
-                        possibleChoices.Clear();
-                        possibleChoices.Add(new Point(i, j));
-                    } //End if (this.Board[i,j].Domain.Count < MRV)
-                    else if (this.Board[i, j].Domain.Count == MRV)
-                    {
-                        possibleChoices.Add(new Point(i, j));
-                    } //End else if (this.Board[i, j].Domain.Count == MRV)
-                } //End for (int i = 0; i < 5; i++)
-            } //End for (int j = 0; j < 5; j ++)
+                    MRV = this.Board[group.OpenNodeLocations[i].X, group.OpenNodeLocations[i].Y].Domain.Count;
+                    possibleChoices.Clear();
+                    possibleChoices.Add(group.OpenNodeLocations[i]);
+                } //End if (this.Board[i,j].Domain.Count < MRV)
+                else if (this.Board[group.OpenNodeLocations[i].X, group.OpenNodeLocations[i].Y].Domain.Count == MRV)
+                {
+                    possibleChoices.Add(group.OpenNodeLocations[i]);
+                } //End else if (this.Board[i, j].Domain.Count == MRV)
+            } //End 
 
             return possibleChoices;
         } //End private List<Point> minRemainingValues()
@@ -319,48 +405,52 @@ namespace CS4750HW6
             return possibleChoices;
         } //End private List<Point> minRemainingValues()
 
-        private void degreeHeuristicNode(List<Point> possibleChoices)
+        private List<Point> degreeHeuristicNode(List<Point> possibleChoices)
         {
             //Declare variables
-
+            int degree = int.MaxValue; //Want a smaller number. Indicates there are fewer valid arrangements of the values in the groups domain
+            int tempDegree = 0;
+            List<Point> newPossibleChoices = new List<Group>();
 
             for (int i = 0; i < possibleChoices.Count; i++)
             {
 
             } //Endfor (int i = 0; i < possibleChoices.Count; i++)
+
+            return newPossibleChoices;
         } //End 
 
-        private List<int> degreeHeuristicGroup(List<Group> possibleChoices)
+        private List<Group> degreeHeuristicGroup(List<Group> possibleChoices)
         {
             //Declare variables
             int degree = int.MaxValue; //Want a smaller number. Indicates there are fewer valid arrangements of the values in the groups domain
             int tempDegree = 0;
-            List<int> newPossibleChoices = new List<int>();
+            List<Group> newPossibleChoices = new List<Group>();
 
             for (int i = 0; i < possibleChoices.Count; i++)
             {
-                for (int j = 0; j < 9; j++)
-                {
-                    foreach (Point p in possibleChoices[i].NodeLocations)
-                    {
-                        tempDegree = 0;
+                tempDegree = 0;
 
-                        if (this.Board[p.X, p.Y].Domain.Exists(x => x == i + 1))
+                for (int j = 0; j < possibleChoices[i].Domain.Count; j++)
+                {
+                    foreach (Point p in possibleChoices[i].OpenNodeLocations)
+                    {
+                        if (this.Board[p.X, p.Y].Domain.Exists(x => x == possibleChoices[i].Domain[j]))
                         {
                             tempDegree += 1;
-                        } //End if (this.Board[p.X, p.Y].Domain.Exists(x => x == i + 1))
+                        } //End if (this.Board[p.X, p.Y].Domain.Exists(x => x == j + 1))
                     } //End foreach (Point p in possibleChoices[i].NodeLocations)
                 } //End for (int j = 0; j < 9; j++)
 
                 if (tempDegree < degree)
                 {
                     newPossibleChoices.Clear();
-                    newPossibleChoices.Add(i);
+                    newPossibleChoices.Add(possibleChoices[i]);
                     degree = tempDegree;
                 } //End if (tempDegree < degree)
                 else if (tempDegree == degree)
                 {
-                    newPossibleChoices.Add(i);
+                    newPossibleChoices.Add(possibleChoices[i]);
                 } //End else if (tempDegree == degree)
             } //Endfor (int i = 0; i < possibleChoices.Count; i++)
 

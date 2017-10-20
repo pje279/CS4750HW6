@@ -13,16 +13,36 @@ namespace CS4750HW6
         //Fields
 
         //Properties
+        public int ID { get; private set; }
         public List<int> Domain { get; private set; }
         public List<int> PlacedVals { get; private set; }
-        public List<Point> NodeLocations { get; private set; }
+        public List<Point> OpenNodeLocations
+        {
+            get
+            {
+                List<Point> locations = new List<Point>();
+
+                for (int i = 0; i < 9; i++)
+                {
+                    if (this.Nodes[i].Value == 0)
+                    {
+                        locations.Add(this.Nodes[i].Position);
+                    } //End if (this.Nodes[i].Value == 0)
+                } //End for (int i = 0; i < 9; i++)
+
+                return locations;
+            } //End get
+        }
+        public List<Node> Nodes { get; private set; }
 
         /***************CONSTRUCTOR***************/
-        public Group()
+        public Group(int id)
         {
+            this.ID = id;
             this.Domain = new List<int>();
             this.PlacedVals = new List<int>();
-            this.NodeLocations = new List<Point>();
+            //this.NodeLocations = new List<Point>();
+            this.Nodes = new List<Node>();
         } //End 
 
         /***************METHODS***************/
@@ -46,15 +66,15 @@ namespace CS4750HW6
 
             return returnVal;
         } //End public bool determineDomain()
-
+        
         public bool isValidLocation(Point location)
         {
             //Declare variables
             bool returnVal = false;
 
-            for (int i = 0; i < this.NodeLocations.Count; i++)
+            for (int i = 0; i < this.OpenNodeLocations.Count; i++)
             {
-                if (this.NodeLocations[i] == location)
+                if (this.OpenNodeLocations[i] == location)
                 {
                     returnVal = true;
                     break;

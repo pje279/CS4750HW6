@@ -15,7 +15,7 @@ namespace CS4750HW6
 
 
         /***************CONSTRUCTOR***************/
-        public Square() : base()
+        public Square(int id) : base(id)
         {
 
         } //End 

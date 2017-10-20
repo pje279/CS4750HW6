@@ -15,7 +15,7 @@ namespace CS4750HW6
 
 
         /***************CONSTRUCTOR***************/
-        public Column() : base()
+        public Column(int id) : base(id)
         {
 
         } //End 
