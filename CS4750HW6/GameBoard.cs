@@ -29,17 +29,306 @@ namespace CS4750HW6
         } //End 
 
         /***************METHODS***************/
-        private void initBoard(int [,] board)
+        
+        public void backtrackingSearch()
+        {
+
+        } //End 
+
+        private Point chooseVariable()
+        {
+            //Declare variables
+            Group group = null;
+            Point returnPos = new Point(-1, -1);
+            List<Group> possibleGroups = null;
+            List<Point> possibleNodes = null;
+
+            possibleGroups = mrvGroups();
+
+            if (possibleGroups.Count > 0)
+            {
+                if (possibleGroups.Count > 1)
+                {
+                    possibleGroups = degreeHeuristicGroup(possibleGroups);
+                } //End if (possibleGroups.Count > 1)
+
+                if (possibleGroups.Count > 1)
+                {
+                    Random rand = new Random();
+                    group = possibleGroups[rand.Next(0, possibleGroups.Count - 1)];
+                } //End if (possibleGroups.Count > 1)
+                else
+                {
+                    group = possibleGroups[0];
+                } //End else
+
+                possibleNodes = mrvNode(group);
+
+                if (possibleNodes.Count > 0)
+                {
+                    if (possibleNodes.Count > 1)
+                    {
+                        possibleNodes = degreeHeuristicNode(possibleNodes);
+                    } //End if (possibleNodes.Count > 1)
+
+                    if (possibleNodes.Count > 1)
+                    {
+                        Random rand = new Random();
+                        returnPos = possibleNodes[rand.Next(0, possibleNodes.Count - 1)];
+                    } //End if (possibleNodes.Count > 1)
+                    else
+                    {
+                        returnPos = possibleNodes[0];
+                    } //End else
+                } //End if (possibleNodes.Count > 0)
+            } //End if (possibleGroups.Count > 0)
+
+            return returnPos;
+        } //End private Point chooseVariable()
+
+        private bool setState(Point var)
+        {
+            //Declare variables
+            bool returnVal = false;
+            Node chosenVar = null;
+
+            if (isValidPosition(var))
+            {
+                chosenVar = this.Board[var.X, var.Y];
+            } //End if (isValidPosition(var))
+
+            if (chosenVar.Domain.Count == 0)
+            {
+                ///BAD CHOICES WERE MADE!
+                ///Need to backtrack. 
+            } //End 
+            else if (chosenVar.Domain.Count == 1)
+            {
+                if (!chosenVar.setValue(chosenVar.Domain[0]))
+                {
+                    ///Wat? How'd this happen? Shouldn't be possible. In theory, assuming everything else
+                    ///is working properly, it shouldn't be possible to choose a variable that already has 
+                    ///a value placed in it. That's the only thing that would cause this function to return 
+                    ///false.
+                } //End if (!chosenVar.setValue(chosenVar.Domain[0]))
+                else
+                {
+                    returnVal = true;
+                } //End else
+            } //End 
+            else if (chosenVar.Domain.Count > 1)
+            {
+                //Pick the smallest value available in the nodes domain to try.
+                if (!chosenVar.setValue(chosenVar.Domain.Min()))
+                {
+                    ///Same as the comment about. Should never reach this point.
+                } //End if (!chosenVar.setValue(chosenVar.Domain.Min()))
+            } //End 
+
+            return returnVal;
+        } //End 
+
+        private bool determineNodeDomain(Point pos)
+        {
+            //Declare variables
+            bool returnVal = false;
+            Node node = this.Board[pos.X, pos.Y];
+
+            //Determine Row constraints
+            //for (int i = 0; i < this.Rows[node.RowID].Domain.Count; i++)
+            for (int i = 0; i < this.Rows[node.RowID].PlacedVals.Count; i++)
+            {
+                if (!node.Constraints.Exists(x => x == this.Rows[node.RowID].PlacedVals[i]))
+                {
+                    node.Constraints.Add(this.Rows[node.RowID].PlacedVals[i]);
+                } //End if (node.Constraints.Exists(x => x != this.Rows[node.RowID].Domain[i]))
+            } //End for (int i = 0; i < this.Rows[node.RowID].Domain.Count; i++)
+
+            //Determine Column constraints
+            for (int i = 0; i < this.Columns[node.ColID].PlacedVals.Count; i++)
+            {
+                if (!node.Constraints.Exists(x => x == this.Columns[node.ColID].PlacedVals[i]))
+                {
+                    node.Constraints.Add(this.Columns[node.ColID].PlacedVals[i]);
+                } //End if (!node.Constraints.Exists(x => x == this.Columns[node.ColID].Domain[i]))
+            } //End for (int i = 0; i < this.Columns[node.ColID].Domain.Count; i++)
+
+            //Determine Square constraints
+            for (int i = 0; i < this.Squares[node.SquareID].PlacedVals.Count; i++)
+            {
+                if (!node.Constraints.Exists(x => x == this.Squares[node.SquareID].PlacedVals[i]))
+                {
+                    node.Constraints.Add(this.Squares[node.SquareID].PlacedVals[i]);
+                } //End if (!node.Constraints.Exists(x => x == this.Squares[node.SquareID].Domain[i]))
+            } //End for (int i = 0; i < this.Squares[node.SquareID].Domain.Count; i++)
+
+            //Add the valid values for the node based off of the row, column, and square constraints
+            returnVal = node.determineDomain();
+
+            return returnVal;
+        } //End private void determineNodeDomain(Point pos)
+
+        #region Heuristics
+        private List<Point> mrvNode(Group group)
+        {
+            //Declare variables
+            int MRV = int.MaxValue;
+            List<Point> possibleChoices = new List<Point>();
+
+            for (int i = 0; i < group.OpenNodeLocations.Count; i++)
+            {
+                if (this.Board[group.OpenNodeLocations[i].X, group.OpenNodeLocations[i].Y].Domain.Count < MRV)
+                {
+                    MRV = this.Board[group.OpenNodeLocations[i].X, group.OpenNodeLocations[i].Y].Domain.Count;
+                    possibleChoices.Clear();
+                    possibleChoices.Add(group.OpenNodeLocations[i]);
+                } //End if (this.Board[i,j].Domain.Count < MRV)
+                else if (this.Board[group.OpenNodeLocations[i].X, group.OpenNodeLocations[i].Y].Domain.Count == MRV)
+                {
+                    possibleChoices.Add(group.OpenNodeLocations[i]);
+                } //End else if (this.Board[i, j].Domain.Count == MRV)
+            } //End 
+
+            return possibleChoices;
+        } //End private List<Point> minRemainingValues()
+
+        private List<Group> mrvGroups()
+        {
+            //Declare variables
+            int MRV = int.MaxValue;
+            List<Row> possibleRows = new List<Row>();
+            List<Column> possibleCols = new List<Column>();
+            List<Square> possibleSquares = new List<Square>();
+            List<Group> possibleChoices = new List<Group>();
+
+            for (int i = 0; i < 9; i++)
+            {
+                //Rows
+                if (this.Rows[i].Domain.Count < MRV)
+                {
+                    possibleChoices.Clear();
+                    possibleChoices.Add(this.Rows[i]);
+                    MRV = this.Rows[i].Domain.Count;
+                } //End if (this.Rows[i].Domain.Count < MRV)
+                else if (this.Rows[i].Domain.Count == MRV)
+                {
+                    possibleChoices.Add(this.Rows[i]);
+                } //End else if (this.Rows[i].Domain.Count == MRV)
+
+                //Colums
+                if (this.Columns[i].Domain.Count < MRV)
+                {
+                    possibleChoices.Clear();
+                    possibleChoices.Add(this.Columns[i]);
+                    MRV = this.Columns[i].Domain.Count;
+                } //End if (this.Columns[i].Domain.Count < MRV)
+                else if (this.Columns[i].Domain.Count == MRV)
+                {
+                    possibleChoices.Add(this.Columns[i]);
+                } //End else if (this.Columns[i].Domain.Count == MRV)
+
+                //Squares
+                if (this.Squares[i].Domain.Count < MRV)
+                {
+                    possibleChoices.Clear();
+                    possibleChoices.Add(this.Squares[i]);
+                    MRV = this.Squares[i].Domain.Count;
+                } //End if (this.Squares[i].Domain.Count < MRV)
+                else if (this.Squares[i].Domain.Count == MRV)
+                {
+                    possibleChoices.Add(this.Squares[i]);
+                } //End else if (this.Squares[i].Domain.Count == MRV)
+            } //End for (int i = 0; i < 9; i++)
+
+            return possibleChoices;
+        } //End private List<Point> minRemainingValues()
+
+        private List<Point> degreeHeuristicNode(List<Point> possibleChoices)
+        {
+            //Declare variables
+            int degree = int.MaxValue; //Want a smaller number. Indicates there are fewer valid arrangements of the values in the Nodes domain
+            int tempDegree = 0;
+            List<Point> newPossibleChoices = new List<Point>();
+
+            for (int i = 0; i < possibleChoices.Count; i++)
+            {
+                tempDegree = this.Board[possibleChoices[i].X, possibleChoices[i].Y].Domain.Count;
+
+                /*
+                for (int j = 0; j < this.Board[possibleChoices[i].X, possibleChoices[i].Y].Domain.Count; j++)
+                {
+                    if (this.Board[possibleChoices[i].X, possibleChoices[i].Y].Domain.Exists(x => x == possibleChoices[i].Domain[j]))
+                    {
+                        tempDegree += 1;
+                    } //End if (this.Board[p.X, p.Y].Domain.Exists(x => x == j + 1))
+                } //End for (int j = 0; j < 9; j++)
+                //*/
+
+                if (tempDegree < degree)
+                {
+                    newPossibleChoices.Clear();
+                    newPossibleChoices.Add(possibleChoices[i]);
+                    degree = tempDegree;
+                } //End if (tempDegree < degree)
+                else if (tempDegree == degree)
+                {
+                    newPossibleChoices.Add(possibleChoices[i]);
+                } //End else if (tempDegree == degree)
+            } //Endfor (int i = 0; i < possibleChoices.Count; i++)
+
+            return newPossibleChoices;
+        } //End 
+
+        private List<Group> degreeHeuristicGroup(List<Group> possibleChoices)
+        {
+            //Declare variables
+            int degree = int.MaxValue; //Want a smaller number. Indicates there are fewer valid arrangements of the values in the groups domain
+            int tempDegree = 0;
+            List<Group> newPossibleChoices = new List<Group>();
+
+            for (int i = 0; i < possibleChoices.Count; i++)
+            {
+                tempDegree = 0;
+
+                for (int j = 0; j < possibleChoices[i].Domain.Count; j++)
+                {
+                    foreach (Point p in possibleChoices[i].OpenNodeLocations)
+                    {
+                        if (this.Board[p.X, p.Y].Domain.Exists(x => x == possibleChoices[i].Domain[j]))
+                        {
+                            tempDegree += 1;
+                        } //End if (this.Board[p.X, p.Y].Domain.Exists(x => x == j + 1))
+                    } //End foreach (Point p in possibleChoices[i].NodeLocations)
+                } //End for (int j = 0; j < 9; j++)
+
+                if (tempDegree < degree)
+                {
+                    newPossibleChoices.Clear();
+                    newPossibleChoices.Add(possibleChoices[i]);
+                    degree = tempDegree;
+                } //End if (tempDegree < degree)
+                else if (tempDegree == degree)
+                {
+                    newPossibleChoices.Add(possibleChoices[i]);
+                } //End else if (tempDegree == degree)
+            } //Endfor (int i = 0; i < possibleChoices.Count; i++)
+
+            return newPossibleChoices;
+        } //End 
+        #endregion Heuristics
+
+        #region Setup & Utility
+        private void initBoard(int[,] board)
         {
             //Declare variables
 
-            this.Board = new Node[9,9];
+            this.Board = new Node[9, 9];
 
             for (int j = 0; j < this.Board.GetLength(1); j++)
             {
                 for (int i = 0; i < this.Board.GetLength(0); i++)
                 {
-                    this.Board[i, j] = new Node(board[i, j], new Point (i, j));
+                    this.Board[i, j] = new Node(board[i, j], new Point(i, j));
                 } //End for (int i = 0; i < 5; i++)
             } //End for (int j = 0; j < 5; j ++)
         } //End private void initBoard(int [,] board)
@@ -64,10 +353,10 @@ namespace CS4750HW6
             {
                 for (int i = 0; i < this.Board.GetLength(0); i++)
                 {
-                    if (this.Board[i,j].Value != 0)
+                    if (this.Board[i, j].Value != 0)
                     {
                         this.Rows[j].PlacedVals.Add(this.Board[i, j].Value);
-                        this.Rows[j].Nodes.Add(this.Board[i,j]);
+                        this.Rows[j].Nodes.Add(this.Board[i, j]);
                         this.Columns[i].PlacedVals.Add(this.Board[i, j].Value);
                         this.Columns[i].Nodes.Add(this.Board[i, j]);
 
@@ -197,7 +486,7 @@ namespace CS4750HW6
             {
                 for (int i = 0; i < this.Board.GetLength(0); i++)
                 {
-                    if (this.Board[i,j].Value == 0)
+                    if (this.Board[i, j].Value == 0)
                     {
                         if (!determineNodeDomain(new Point(i, j)))
                         {
@@ -221,7 +510,7 @@ namespace CS4750HW6
                 returnString += "||  ";
                 for (int i = 0; i < this.Board.GetLength(0); i++)
                 {
-                    returnString += this.Board[i, j].ToString();
+                    returnString += this.Board[i, j].Value.ToString();
 
                     if (i % 3 == 2 && i != 0)
                     {
@@ -250,213 +539,6 @@ namespace CS4750HW6
             return returnString;
         } //End public string displayBoard()
 
-        private bool determineNodeDomain(Point pos)
-        {
-            //Declare variables
-            bool returnVal = false;
-            Node node = this.Board[pos.X, pos.Y];
-
-            //Determine Row constraints
-            //for (int i = 0; i < this.Rows[node.RowID].Domain.Count; i++)
-            for (int i = 0; i < this.Rows[node.RowID].PlacedVals.Count; i++)
-            {
-                if (!node.Constraints.Exists(x => x == this.Rows[node.RowID].PlacedVals[i]))
-                {
-                    node.Constraints.Add(this.Rows[node.RowID].PlacedVals[i]);
-                } //End if (node.Constraints.Exists(x => x != this.Rows[node.RowID].Domain[i]))
-            } //End for (int i = 0; i < this.Rows[node.RowID].Domain.Count; i++)
-
-            //Determine Column constraints
-            for (int i = 0; i < this.Columns[node.ColID].PlacedVals.Count; i++)
-            {
-                if (!node.Constraints.Exists(x => x == this.Columns[node.ColID].PlacedVals[i]))
-                {
-                    node.Constraints.Add(this.Columns[node.ColID].PlacedVals[i]);
-                } //End if (!node.Constraints.Exists(x => x == this.Columns[node.ColID].Domain[i]))
-            } //End for (int i = 0; i < this.Columns[node.ColID].Domain.Count; i++)
-
-            //Determine Square constraints
-            for (int i = 0; i < this.Squares[node.SquareID].PlacedVals.Count; i++)
-            {
-                if (!node.Constraints.Exists(x => x == this.Squares[node.SquareID].PlacedVals[i]))
-                {
-                    node.Constraints.Add(this.Squares[node.SquareID].PlacedVals[i]);
-                } //End if (!node.Constraints.Exists(x => x == this.Squares[node.SquareID].Domain[i]))
-            } //End for (int i = 0; i < this.Squares[node.SquareID].Domain.Count; i++)
-
-            //Add the valid values for the node based off of the row, column, and square constraints
-            returnVal = node.determineDomain();
-
-            return returnVal;
-        } //End private void determineNodeDomain(Point pos)
-
-        private Point chooseVariable()
-        {
-            //Declare variables
-            Group group = null;
-            Point returnPos = new Point(-1, -1);
-            List<Group> possibleGroups = null;
-            List<Point> possibleNodes = null;
-
-
-            possibleGroups = mrvGroups();
-
-            if (possibleGroups.Count > 0)
-            {
-                if (possibleGroups.Count > 1)
-                {
-                    possibleGroups = degreeHeuristicGroup(possibleGroups);
-                } //End 
-
-                if (possibleGroups.Count > 1)
-                {
-                    Random rand = new Random();
-                    group = possibleGroups[rand.Next(0, possibleGroups.Count - 1)];
-                } //End 
-
-                possibleNodes = mrvNode(group);
-
-                if (possibleNodes.Count > 0)
-                {
-                    if (possibleNodes.Count > 1)
-                    {
-                        possibleNodes = degreeHeuristicNode(possibleNodes);
-                    } //End 
-
-
-
-                } //End 
-            } //End 
-
-            return returnPos;
-        } //End 
-
-        private List<Point> mrvNode(Group group)
-        {
-            //Declare variables
-            int MRV = int.MaxValue;
-            List<Point> possibleChoices = new List<Point>();
-
-            for (int i = 0; i < group.OpenNodeLocations.Count; i++)
-            {
-                if (this.Board[group.OpenNodeLocations[i].X, group.OpenNodeLocations[i].Y].Domain.Count < MRV)
-                {
-                    MRV = this.Board[group.OpenNodeLocations[i].X, group.OpenNodeLocations[i].Y].Domain.Count;
-                    possibleChoices.Clear();
-                    possibleChoices.Add(group.OpenNodeLocations[i]);
-                } //End if (this.Board[i,j].Domain.Count < MRV)
-                else if (this.Board[group.OpenNodeLocations[i].X, group.OpenNodeLocations[i].Y].Domain.Count == MRV)
-                {
-                    possibleChoices.Add(group.OpenNodeLocations[i]);
-                } //End else if (this.Board[i, j].Domain.Count == MRV)
-            } //End 
-
-            return possibleChoices;
-        } //End private List<Point> minRemainingValues()
-
-        private List<Group> mrvGroups()
-        {
-            //Declare variables
-            int MRV = int.MaxValue;
-            List<Row> possibleRows = new List<Row>();
-            List<Column> possibleCols = new List<Column>();
-            List<Square> possibleSquares = new List<Square>();
-            List<Group> possibleChoices = new List<Group>();
-
-            for (int i = 0; i < 9; i++)
-            {
-                //Rows
-                if (this.Rows[i].Domain.Count < MRV)
-                {
-                    possibleChoices.Clear();
-                    possibleChoices.Add(this.Rows[i]);
-                    MRV = this.Rows[i].Domain.Count;
-                } //End if (this.Rows[i].Domain.Count < MRV)
-                else if (this.Rows[i].Domain.Count == MRV)
-                {
-                    possibleChoices.Add(this.Rows[i]);
-                } //End else if (this.Rows[i].Domain.Count == MRV)
-
-                //Colums
-                if (this.Columns[i].Domain.Count < MRV)
-                {
-                    possibleChoices.Clear();
-                    possibleChoices.Add(this.Columns[i]);
-                    MRV = this.Columns[i].Domain.Count;
-                } //End if (this.Columns[i].Domain.Count < MRV)
-                else if (this.Columns[i].Domain.Count == MRV)
-                {
-                    possibleChoices.Add(this.Columns[i]);
-                } //End else if (this.Columns[i].Domain.Count == MRV)
-
-                //Squares
-                if (this.Squares[i].Domain.Count < MRV)
-                {
-                    possibleChoices.Clear();
-                    possibleChoices.Add(this.Squares[i]);
-                    MRV = this.Squares[i].Domain.Count;
-                } //End if (this.Squares[i].Domain.Count < MRV)
-                else if (this.Squares[i].Domain.Count == MRV)
-                {
-                    possibleChoices.Add(this.Squares[i]);
-                } //End else if (this.Squares[i].Domain.Count == MRV)
-            } //End for (int i = 0; i < 9; i++)
-
-            return possibleChoices;
-        } //End private List<Point> minRemainingValues()
-
-        private List<Point> degreeHeuristicNode(List<Point> possibleChoices)
-        {
-            //Declare variables
-            int degree = int.MaxValue; //Want a smaller number. Indicates there are fewer valid arrangements of the values in the groups domain
-            int tempDegree = 0;
-            List<Point> newPossibleChoices = new List<Group>();
-
-            for (int i = 0; i < possibleChoices.Count; i++)
-            {
-
-            } //Endfor (int i = 0; i < possibleChoices.Count; i++)
-
-            return newPossibleChoices;
-        } //End 
-
-        private List<Group> degreeHeuristicGroup(List<Group> possibleChoices)
-        {
-            //Declare variables
-            int degree = int.MaxValue; //Want a smaller number. Indicates there are fewer valid arrangements of the values in the groups domain
-            int tempDegree = 0;
-            List<Group> newPossibleChoices = new List<Group>();
-
-            for (int i = 0; i < possibleChoices.Count; i++)
-            {
-                tempDegree = 0;
-
-                for (int j = 0; j < possibleChoices[i].Domain.Count; j++)
-                {
-                    foreach (Point p in possibleChoices[i].OpenNodeLocations)
-                    {
-                        if (this.Board[p.X, p.Y].Domain.Exists(x => x == possibleChoices[i].Domain[j]))
-                        {
-                            tempDegree += 1;
-                        } //End if (this.Board[p.X, p.Y].Domain.Exists(x => x == j + 1))
-                    } //End foreach (Point p in possibleChoices[i].NodeLocations)
-                } //End for (int j = 0; j < 9; j++)
-
-                if (tempDegree < degree)
-                {
-                    newPossibleChoices.Clear();
-                    newPossibleChoices.Add(possibleChoices[i]);
-                    degree = tempDegree;
-                } //End if (tempDegree < degree)
-                else if (tempDegree == degree)
-                {
-                    newPossibleChoices.Add(possibleChoices[i]);
-                } //End else if (tempDegree == degree)
-            } //Endfor (int i = 0; i < possibleChoices.Count; i++)
-
-            return newPossibleChoices;
-        } //End 
-
         private bool isValidPosition(Point pos)
         {
             //Declare variables
@@ -469,5 +551,7 @@ namespace CS4750HW6
 
             return returnVal;
         } //End 
+        #endregion Setup
+
     } //End class Gameboard
 } //End namespace CS4750HW6

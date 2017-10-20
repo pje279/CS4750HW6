@@ -15,9 +15,6 @@ namespace CS4750HW6
         //Properties
         public List<int> Domain { get; private set; }
         public List<int> Constraints { get; private set; }
-        public List<int> RowConstraint { get; private set; }
-        public List<int> ColConstraint { get; private set; }
-        public List<int> SquareConstraint { get; private set; }
         public int RowID { get; private set; }
         public int ColID { get; private set; }
         public int SquareID { get; private set; }
@@ -29,15 +26,36 @@ namespace CS4750HW6
         {
             this.Domain = new List<int>();
             this.Constraints = new List<int>();
-            this.RowConstraint = new List<int>();
-            this.ColConstraint = new List<int>();
-            this.SquareConstraint = new List<int>();
             this.Position = position;
             this.Value = val;
             determineGroups();
         } //End 
 
         /***************METHODS***************/
+
+        public bool setValue(int val)
+        {
+            //Declare variables
+            bool returnVal = false;
+
+            if (this.Value == 0)
+            {
+                this.Value = val;
+                returnVal = true;
+            } //End if (this.Value == 0)
+
+            this.Domain.Remove(val);
+
+            return returnVal;
+        } //End public bool setValue(int val)
+
+        public void undo()
+        {
+            //Declare variables
+
+            this.Domain.Add(this.Value);
+            this.Value = 0;
+        } //End public void undo()
 
         private void determineGroups()
         {
