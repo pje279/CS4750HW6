@@ -17,6 +17,7 @@ namespace CS4750HW6
         private List<Square> Squares { get; set; }
         private List<Row> Rows { get; set; }
         private List<Column> Columns { get; set; }
+        private List<Move> Moves { get; set; }
 
         /***************CONSTRUCTOR***************/
         public GameBoard(int[,] board)
@@ -548,6 +549,58 @@ namespace CS4750HW6
             {
                 returnVal = true;
             } //End if (pos.X >= 0 && pos.Y >= 0 && pos.X < 9 && pos.Y < 9)
+
+            return returnVal;
+        } //End 
+
+        private bool isValidRow(Point pos)
+        {
+            //Declare variables
+            bool returnVal = false;
+
+            return returnVal;
+        } //End private bool isValidRow(Point pos)
+
+        private bool isValidColumn(Point pos)
+        {
+            //Declare variables
+            bool returnVal = false;
+
+            return returnVal;
+        } //End private bool isValidColumn(Point pos)
+
+        private bool isValidSquare(Point pos)
+        {
+            //Declare variables
+            bool returnVal = false;
+
+            return returnVal;
+        } //End private bool isValidSquare(Point pos)
+
+        private bool isGoalState()
+        {
+            //Declare variables
+            bool returnVal = true;
+
+            for (int j = 0; j < this.Board.GetLength(1); j++)
+            {
+                for (int i = 0; i < this.Board.GetLength(0); i++)
+                {
+                    if (this.Board[i,j].Value == 0)
+                    {
+                        returnVal = false;
+                        break;
+                    } //End if (this.Board[i, j].Value == 0)
+                } //End for (int i = 0; i < 5; i++)
+            } //End for (int j = 0; j < 5; j ++)
+
+            return returnVal;
+        } //End private bool isGoalState()
+
+        private int determinRowColSquare(Point pos)
+        {
+            //Declare variables
+            int returnVal = -1;
 
             return returnVal;
         } //End 
