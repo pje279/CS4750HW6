@@ -67,6 +67,21 @@ namespace CS4750HW6
             return returnVal;
         } //End public bool determineDomain()
         
+        public void reDetermineDomain()
+        {
+            //Declare variables
+
+            this.Domain.Clear();
+
+            for (int i = 0; i < 9; i++)
+            {
+                if (!this.PlacedVals.Exists(x => x == i + 1))
+                {
+                    this.Domain.Add(i + 1);
+                } //End if (!this.PlacedVals.Exists(x => x == i + 1))
+            } //End for (int i = 0; i < 9; i++)
+        } //End public void reDetermineDomain()
+
         public bool isValidLocation(Point location)
         {
             //Declare variables

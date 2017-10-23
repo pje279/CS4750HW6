@@ -79,14 +79,22 @@ namespace CS4750HW6
                 return puzzle3;
             } //End get
         } //End int[,] Puzzle3
+        private bool Puzzle1Started { get; set; }
+        private bool Puzzle2Started { get; set; }
+        private bool Puzzle3Started { get; set; }
+        private GameBoard Board1 { get; set; }
+        private GameBoard Board2 { get; set; }
+        private GameBoard Board3 { get; set; }
 
         /***************CONSTRUCTOR***************/
         public Form1()
         {
             InitializeComponent();
 
-            GameBoard board = new GameBoard(this.Puzzle1);
-            this.displayData(board.displayBoard());
+            this.Puzzle1Started = false;
+            this.Puzzle2Started = false;
+            this.Puzzle3Started = false;
+
         } //End public Form1()
 
         /***************METHODS***************/
@@ -109,18 +117,27 @@ namespace CS4750HW6
 
         private void reset()
         {
-            
+            this.Puzzle1Started = false;
+            this.Puzzle2Started = false;
+            this.Puzzle3Started = false;
         } //End private void reset()
 
         /***************EVENTS***************/
         private void btnReset_Click(object sender, EventArgs e)
         {
-
+            reset();
         } //End private void btnReset_Click(object sender, EventArgs e)
 
         private void btnPuzzle1_Click(object sender, EventArgs e)
         {
+            if (!this.Puzzle1Started)
+            {
+                this.Board1 = new GameBoard(this.Puzzle1);
+                this.Puzzle1Started = true;
+            } //End if (!this.Puzzle1Started)
 
+            this.Board1.backtrackingSearch();
+            displayData(this.Board1.displayBoard());
         } //End private void btnPuzzle1_Click(object sender, EventArgs e)
 
         private void btnPuzzle2_Click(object sender, EventArgs e)

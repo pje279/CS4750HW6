@@ -130,6 +130,21 @@ namespace CS4750HW6
             return returnVal;
         } //End public bool determineDomain()
 
+        public void reDetermineDomain()
+        {
+            //Declare variables
+
+            this.Domain.Clear();
+
+            for (int i = 0; i < 9; i++)
+            {
+                if (!this.Constraints.Exists(x => x == i + 1))
+                {
+                    this.Domain.Add(i + 1);
+                } //End if (!this.Constraints.Exists(x => x == i + 1))
+            } //End for (int i = 0; i < 9; i++)
+        } //End public bool determineDomain()
+
         private bool isValidPosition(Point pos)
         {
             //Declare variables

@@ -18,6 +18,8 @@ namespace CS4750HW6
         private List<Row> Rows { get; set; }
         private List<Column> Columns { get; set; }
         private List<Move> Moves { get; set; }
+        private List<int> GuessedTurns { get; set; }
+        private int Turn { get; set; }
 
         /***************CONSTRUCTOR***************/
         public GameBoard(int[,] board)
@@ -26,15 +28,43 @@ namespace CS4750HW6
             initGroups();
             initNodes();
 
-            this.isGoalState();
-            //var x = chooseVariable();
+            this.Moves = new List<Move>();
+
+            this.Turn = 0;
+            this.GuessedTurns = new List<int>();
         } //End 
 
         /***************METHODS***************/
         
-        public void backtrackingSearch()
+        public bool backtrackingSearch()
         {
+            //Declare variables
+            bool returnVal = false;
+            Point nodeChosen = new Point(-1, -1);
+            Node node = null;
 
+            if (!isGoalState())
+            {
+                nodeChosen = chooseVariable();
+                
+                if (isValidPosition(nodeChosen))
+                {
+                    node = this.Board[nodeChosen.X, nodeChosen.Y];
+
+                    if (setState(node))
+                    {
+                        this.Turn += 1;
+                    } //End if (setState(node))
+                    else
+                    { //Need to backtrack
+
+                    } //End else
+
+                    
+                } //End 
+            } //End if (!isGoalState())
+            
+            return returnVal;
         } //End 
 
         private Point chooseVariable()
@@ -88,24 +118,30 @@ namespace CS4750HW6
             return returnPos;
         } //End private Point chooseVariable()
 
-        private bool setState(Point var)
+        private bool setState(Node chosenVar)
         {
             //Declare variables
             bool returnVal = false;
-            Node chosenVar = null;
+            int valBeingPlaced = 0;
+            Move move = null;
+            //Node chosenVar = null;
 
+            /**
             if (isValidPosition(var))
             {
                 chosenVar = this.Board[var.X, var.Y];
             } //End if (isValidPosition(var))
+            //*/
 
             if (chosenVar.Domain.Count == 0)
             {
                 ///BAD CHOICES WERE MADE!
                 ///Need to backtrack. 
-            } //End 
+            } //End if (chosenVar.Domain.Count == 0)
             else if (chosenVar.Domain.Count == 1)
             {
+                valBeingPlaced = chosenVar.Domain[0];
+
                 if (!chosenVar.setValue(chosenVar.Domain[0]))
                 {
                     ///Wat? How'd this happen? Shouldn't be possible. In theory, assuming everything else
@@ -115,20 +151,61 @@ namespace CS4750HW6
                 } //End if (!chosenVar.setValue(chosenVar.Domain[0]))
                 else
                 {
+                    move = new Move(this.Turn, chosenVar, valBeingPlaced, false);
+                    this.Moves.Insert(0, move);
+
+                    this.Rows[chosenVar.SquareID].PlacedVals.Add(valBeingPlaced);
+                    this.Columns[chosenVar.SquareID].PlacedVals.Add(valBeingPlaced);
+                    this.Squares[chosenVar.SquareID].PlacedVals.Add(valBeingPlaced);
+
+                    forwardCheck(chosenVar);
+
                     returnVal = true;
                 } //End else
             } //End 
             else if (chosenVar.Domain.Count > 1)
             {
+                valBeingPlaced = chosenVar.Domain.Min();
+
                 //Pick the smallest value available in the nodes domain to try.
                 if (!chosenVar.setValue(chosenVar.Domain.Min()))
                 {
                     ///Same as the comment about. Should never reach this point.
                 } //End if (!chosenVar.setValue(chosenVar.Domain.Min()))
-            } //End 
+                else
+                {
+                    move = new Move(this.Turn, chosenVar, valBeingPlaced, true);
+                    this.Moves.Insert(0, move);
+                    this.GuessedTurns.Add(this.Turn);
+
+                    this.Rows[chosenVar.SquareID].PlacedVals.Add(valBeingPlaced);
+                    this.Columns[chosenVar.SquareID].PlacedVals.Add(valBeingPlaced);
+                    this.Squares[chosenVar.SquareID].PlacedVals.Add(valBeingPlaced);
+
+                    forwardCheck(chosenVar);
+
+                    returnVal = true;
+                } //End else
+            } //End else if (chosenVar.Domain.Count > 1)
 
             return returnVal;
-        } //End 
+        } //End private bool setState(Node chosenVar)
+
+        private void forwardCheck(Node node)
+        {
+            //Declare variables
+
+            //this.Rows[node.RowID].OpenNodeLocations.Remove(node.Position);
+            //this.Columns[node.ColID].OpenNodeLocations.Remove(node.Position);
+            //this.Squares[node.SquareID].OpenNodeLocations.Remove(node.Position);
+
+            this.Rows[node.RowID].reDetermineDomain();
+            this.Columns[node.ColID].reDetermineDomain();
+            this.Squares[node.SquareID].reDetermineDomain();
+
+            for (int i = 0; i < this.Rows[node.RowID])
+
+        } //End private void forwardCheck(Node node)
 
         private bool determineNodeDomain(Point pos)
         {
@@ -648,14 +725,16 @@ namespace CS4750HW6
         {
             //Declare variables
             bool returnVal = true;
+            bool quit = false;
 
-            for (int j = 0; j < this.Board.GetLength(1); j++)
+            for (int j = 0; j < this.Board.GetLength(1) && !quit; j++)
             {
-                for (int i = 0; i < this.Board.GetLength(0); i++)
+                for (int i = 0; i < this.Board.GetLength(0) && !quit; i++)
                 {
                     if (this.Board[i,j].Value == 0)
                     {
                         returnVal = false;
+                        quit = true;
                         break;
                     } //End if (this.Board[i, j].Value == 0)
 
@@ -664,6 +743,7 @@ namespace CS4750HW6
                         if (!isCompleteSquare(new Point(i,j)))
                         {
                             returnVal = false;
+                            quit = true;
                             break;
                         } //End if (!isCompleteSquare(new Point(i,j)))
                     } //End if (i % 3 == 0 && j % 3 == 0)
@@ -673,6 +753,7 @@ namespace CS4750HW6
                         if (!isCompleteRow(new Point(i, j)) || isCompleteColumn(new Point(i, j)))
                         {
                             returnVal = false;
+                            quit = true;
                             break;
                         } //End if (!isCompleteRow(new Point(i, j)) || isCompleteColumn(new Point(i, j)))
                     } //End if (j < 1)
@@ -681,14 +762,6 @@ namespace CS4750HW6
             
             return returnVal;
         } //End public bool isGoalState()
-
-        private int determinRowColSquare(Point pos)
-        {
-            //Declare variables
-            int returnVal = -1;
-
-            return returnVal;
-        } //End 
         #endregion Setup
 
     } //End class Gameboard
