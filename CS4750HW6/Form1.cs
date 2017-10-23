@@ -95,6 +95,10 @@ namespace CS4750HW6
             this.Puzzle2Started = false;
             this.Puzzle3Started = false;
 
+
+
+            this.Board1 = new GameBoard(this.Puzzle1);
+            displayData(this.Board1.displayBoard());
         } //End public Form1()
 
         /***************METHODS***************/

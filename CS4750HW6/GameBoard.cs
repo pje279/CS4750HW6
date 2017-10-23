@@ -154,8 +154,8 @@ namespace CS4750HW6
                     move = new Move(this.Turn, chosenVar, valBeingPlaced, false);
                     this.Moves.Insert(0, move);
 
-                    this.Rows[chosenVar.SquareID].PlacedVals.Add(valBeingPlaced);
-                    this.Columns[chosenVar.SquareID].PlacedVals.Add(valBeingPlaced);
+                    this.Rows[chosenVar.RowID].PlacedVals.Add(valBeingPlaced);
+                    this.Columns[chosenVar.ColID].PlacedVals.Add(valBeingPlaced);
                     this.Squares[chosenVar.SquareID].PlacedVals.Add(valBeingPlaced);
 
                     forwardCheck(chosenVar);
@@ -178,8 +178,8 @@ namespace CS4750HW6
                     this.Moves.Insert(0, move);
                     this.GuessedTurns.Add(this.Turn);
 
-                    this.Rows[chosenVar.SquareID].PlacedVals.Add(valBeingPlaced);
-                    this.Columns[chosenVar.SquareID].PlacedVals.Add(valBeingPlaced);
+                    this.Rows[chosenVar.RowID].PlacedVals.Add(valBeingPlaced);
+                    this.Columns[chosenVar.ColID].PlacedVals.Add(valBeingPlaced);
                     this.Squares[chosenVar.SquareID].PlacedVals.Add(valBeingPlaced);
 
                     forwardCheck(chosenVar);
@@ -191,20 +191,46 @@ namespace CS4750HW6
             return returnVal;
         } //End private bool setState(Node chosenVar)
 
-        private void forwardCheck(Node node)
+        private bool forwardCheck(Node node)
         {
             //Declare variables
-
-            //this.Rows[node.RowID].OpenNodeLocations.Remove(node.Position);
-            //this.Columns[node.ColID].OpenNodeLocations.Remove(node.Position);
-            //this.Squares[node.SquareID].OpenNodeLocations.Remove(node.Position);
+            bool returnVal = true;
 
             this.Rows[node.RowID].reDetermineDomain();
             this.Columns[node.ColID].reDetermineDomain();
             this.Squares[node.SquareID].reDetermineDomain();
 
-            for (int i = 0; i < this.Rows[node.RowID])
+            for (int i = 0; i < this.Rows[node.RowID].OpenNodeLocations.Count && returnVal; i++)
+            {
+                if (!determineNodeDomain(this.Rows[node.RowID].OpenNodeLocations[i]))
+                {
+                    returnVal = false;
+                    break;
+                } //End if (!determineNodeDomain(this.Rows[node.RowID].OpenNodeLocations[i]))
+                //this.Board[this.Rows[node.RowID].OpenNodeLocations[i].X, this.Rows[node.RowID].OpenNodeLocations[i].Y].reDetermineDomain();
+            } //End for (int i = 0; i < this.Rows[node.RowID].OpenNodeLocations.Count && returnVal; i++)
 
+            for (int i = 0; i < this.Columns[node.ColID].OpenNodeLocations.Count && returnVal; i++)
+            {
+                if (!determineNodeDomain(this.Columns[node.ColID].OpenNodeLocations[i]))
+                {
+                    returnVal = false;
+                    break;
+                } //End if (!determineNodeDomain(this.Columns[node.ColID].OpenNodeLocations[i]))
+                //this.Board[this.Columns[node.ColID].OpenNodeLocations[i].X, this.Columns[node.ColID].OpenNodeLocations[i].Y].reDetermineDomain();
+            } //End for (int i = 0; i < this.Columns[node.ColID].OpenNodeLocations.Count && returnVal; i++)
+
+            for (int i = 0; i < this.Squares[node.SquareID].OpenNodeLocations.Count && returnVal; i++)
+            {
+                if (!determineNodeDomain(this.Squares[node.SquareID].OpenNodeLocations[i]))
+                {
+                    returnVal = false;
+                    break;
+                } //End if (!determineNodeDomain(this.Squares[node.SquareID].OpenNodeLocations[i]))
+                //this.Board[this.Squares[node.SquareID].OpenNodeLocations[i].X, this.Squares[node.SquareID].OpenNodeLocations[i].Y].reDetermineDomain();
+            } //End for (int i = 0; i < this.Squares[node.SquareID].OpenNodeLocations.Count && returnVal; i++)
+
+            return returnVal;
         } //End private void forwardCheck(Node node)
 
         private bool determineNodeDomain(Point pos)
@@ -212,6 +238,9 @@ namespace CS4750HW6
             //Declare variables
             bool returnVal = false;
             Node node = this.Board[pos.X, pos.Y];
+
+            node.Constraints.Clear();
+            node.Domain.Clear();
 
             //Determine Row constraints
             //for (int i = 0; i < this.Rows[node.RowID].Domain.Count; i++)
@@ -283,40 +312,49 @@ namespace CS4750HW6
             for (int i = 0; i < 9; i++)
             {
                 //Rows
-                if (this.Rows[i].Domain.Count < MRV)
+                if (this.Rows[i].Domain.Count > 0)
                 {
-                    possibleChoices.Clear();
-                    possibleChoices.Add(this.Rows[i]);
-                    MRV = this.Rows[i].Domain.Count;
-                } //End if (this.Rows[i].Domain.Count < MRV)
-                else if (this.Rows[i].Domain.Count == MRV)
-                {
-                    possibleChoices.Add(this.Rows[i]);
-                } //End else if (this.Rows[i].Domain.Count == MRV)
+                    if (this.Rows[i].Domain.Count < MRV)
+                    {
+                        possibleChoices.Clear();
+                        possibleChoices.Add(this.Rows[i]);
+                        MRV = this.Rows[i].Domain.Count;
+                    } //End if (this.Rows[i].Domain.Count < MRV)
+                    else if (this.Rows[i].Domain.Count == MRV)
+                    {
+                        possibleChoices.Add(this.Rows[i]);
+                    } //End else if (this.Rows[i].Domain.Count == MRV)
+                } //End 
 
                 //Colums
-                if (this.Columns[i].Domain.Count < MRV)
+                if (this.Columns[i].Domain.Count > 0)
                 {
-                    possibleChoices.Clear();
-                    possibleChoices.Add(this.Columns[i]);
-                    MRV = this.Columns[i].Domain.Count;
-                } //End if (this.Columns[i].Domain.Count < MRV)
-                else if (this.Columns[i].Domain.Count == MRV)
-                {
-                    possibleChoices.Add(this.Columns[i]);
-                } //End else if (this.Columns[i].Domain.Count == MRV)
+                    if (this.Columns[i].Domain.Count < MRV)
+                    {
+                        possibleChoices.Clear();
+                        possibleChoices.Add(this.Columns[i]);
+                        MRV = this.Columns[i].Domain.Count;
+                    } //End if (this.Columns[i].Domain.Count < MRV)
+                    else if (this.Columns[i].Domain.Count == MRV)
+                    {
+                        possibleChoices.Add(this.Columns[i]);
+                    } //End else if (this.Columns[i].Domain.Count == MRV)
+                } //End 
 
                 //Squares
-                if (this.Squares[i].Domain.Count < MRV)
+                if (this.Squares[i].Domain.Count > 0)
                 {
-                    possibleChoices.Clear();
-                    possibleChoices.Add(this.Squares[i]);
-                    MRV = this.Squares[i].Domain.Count;
-                } //End if (this.Squares[i].Domain.Count < MRV)
-                else if (this.Squares[i].Domain.Count == MRV)
-                {
-                    possibleChoices.Add(this.Squares[i]);
-                } //End else if (this.Squares[i].Domain.Count == MRV)
+                    if (this.Squares[i].Domain.Count < MRV)
+                    {
+                        possibleChoices.Clear();
+                        possibleChoices.Add(this.Squares[i]);
+                        MRV = this.Squares[i].Domain.Count;
+                    } //End if (this.Squares[i].Domain.Count < MRV)
+                    else if (this.Squares[i].Domain.Count == MRV)
+                    {
+                        possibleChoices.Add(this.Squares[i]);
+                    } //End else if (this.Squares[i].Domain.Count == MRV)
+                } //End 
             } //End for (int i = 0; i < 9; i++)
 
             return possibleChoices;
