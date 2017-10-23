@@ -26,7 +26,8 @@ namespace CS4750HW6
             initGroups();
             initNodes();
 
-            var x = chooseVariable();
+            this.isGoalState();
+            //var x = chooseVariable();
         } //End 
 
         /***************METHODS***************/
@@ -553,31 +554,97 @@ namespace CS4750HW6
             return returnVal;
         } //End 
 
-        private bool isValidRow(Point pos)
+        private bool isCompleteRow(Point pos)
         {
             //Declare variables
             bool returnVal = false;
+            int rowID = -1;
+
+            if (isValidPosition(pos))
+            {
+                rowID = this.Board[pos.X, pos.Y].RowID;
+
+                if (rowID >= 0 && rowID <= 8)
+                {
+                    if (this.Rows[rowID].Domain.Count == 0 && this.Rows[rowID].OpenNodeLocations.Count == 0 && this.Rows[rowID].PlacedVals.Count == 9)
+                    {
+                        for (int i = 0; i < this.Rows[rowID].PlacedVals.Count; i++)
+                        {
+                            if (!this.Rows[rowID].PlacedVals.Exists(x => x == i + 1))
+                            {
+                                break;
+                            } //End if (!this.Rows[rowID].PlacedVals.Exists(x => x == i + 1))
+                        } //End for (int i = 0; i < this.Rows[rowID].PlacedVals.Count; i++)
+
+                        returnVal = true;
+                    } //End if (this.Rows[rowID].Domain.Count == 0 && this.Rows[rowID].OpenNodeLocations.Count == 0 && this.Rows[rowID].PlacedVals.Count == 9)
+                } //End if (rowID >= 0 && rowID <= 8)
+            } //End if (isValidPosition(pos))
 
             return returnVal;
         } //End private bool isValidRow(Point pos)
 
-        private bool isValidColumn(Point pos)
+        private bool isCompleteColumn(Point pos)
         {
             //Declare variables
             bool returnVal = false;
+            int colID = -1;
+
+            if (isValidPosition(pos))
+            {
+                colID = this.Board[pos.X, pos.Y].ColID;
+
+                if (colID >= 0 && colID <= 8)
+                {
+                    if (this.Columns[colID].Domain.Count == 0 && this.Columns[colID].OpenNodeLocations.Count == 0 && this.Columns[colID].PlacedVals.Count == 9)
+                    {
+                        for (int i = 0; i < this.Columns[colID].PlacedVals.Count; i++)
+                        {
+                            if (!this.Columns[colID].PlacedVals.Exists(x => x == i + 1))
+                            {
+                                break;
+                            } //End if (!this.Columns[colID].PlacedVals.Exists(x => x == i + 1))
+                        } //End for (int i = 0; i < this.Columns[colID].PlacedVals.Count; i++)
+
+                        returnVal = true;
+                    } //End if (this.Columns[colID].Domain.Count == 0 && this.Columns[colID].OpenNodeLocations.Count == 0 && this.Columns[colID].PlacedVals.Count == 9)
+                } //End if (colID >= 0 && colID <= 8)
+            } //End if (isValidPosition(pos))
 
             return returnVal;
         } //End private bool isValidColumn(Point pos)
 
-        private bool isValidSquare(Point pos)
+        private bool isCompleteSquare(Point pos)
         {
             //Declare variables
             bool returnVal = false;
+            int sqrID = -1;
+
+            if (isValidPosition(pos))
+            {
+                sqrID = this.Board[pos.X, pos.Y].SquareID;
+
+                if (sqrID >= 0 && sqrID <= 8)
+                {
+                    if (this.Squares[sqrID].Domain.Count == 0 && this.Squares[sqrID].OpenNodeLocations.Count == 0 && this.Squares[sqrID].PlacedVals.Count == 9)
+                    {
+                        for (int i = 0; i < this.Squares[sqrID].PlacedVals.Count; i++)
+                        {
+                            if (!this.Squares[sqrID].PlacedVals.Exists(x => x == i + 1))
+                            {
+                                break;
+                            } //End if (!this.Squares[sqrID].PlacedVals.Exists(x => x == i + 1))
+                        } //End for (int i = 0; i < this.Squares[sqrID].PlacedVals.Count; i++)
+
+                        returnVal = true;
+                    } //End if (this.Squares[sqrID].Domain.Count == 0 && this.Squares[sqrID].OpenNodeLocations.Count == 0 && this.Squares[sqrID].PlacedVals.Count == 9)
+                } //End if (colID >= 0 && colID <= 8)
+            } //End if (isValidPosition(pos))
 
             return returnVal;
         } //End private bool isValidSquare(Point pos)
 
-        private bool isGoalState()
+        public bool isGoalState()
         {
             //Declare variables
             bool returnVal = true;
@@ -591,11 +658,29 @@ namespace CS4750HW6
                         returnVal = false;
                         break;
                     } //End if (this.Board[i, j].Value == 0)
+
+                    if (i % 3 == 0 && j % 3 == 0)
+                    {
+                        if (!isCompleteSquare(new Point(i,j)))
+                        {
+                            returnVal = false;
+                            break;
+                        } //End if (!isCompleteSquare(new Point(i,j)))
+                    } //End if (i % 3 == 0 && j % 3 == 0)
+
+                    if (j < 1)
+                    {
+                        if (!isCompleteRow(new Point(i, j)) || isCompleteColumn(new Point(i, j)))
+                        {
+                            returnVal = false;
+                            break;
+                        } //End if (!isCompleteRow(new Point(i, j)) || isCompleteColumn(new Point(i, j)))
+                    } //End if (j < 1)
                 } //End for (int i = 0; i < 5; i++)
             } //End for (int j = 0; j < 5; j ++)
-
+            
             return returnVal;
-        } //End private bool isGoalState()
+        } //End public bool isGoalState()
 
         private int determinRowColSquare(Point pos)
         {
