@@ -57,7 +57,10 @@ namespace CS4750HW6
                     } //End if (setState(node))
                     else
                     { //Need to backtrack
+                        while(!this.Moves[0].ValueWasGuess)
+                        {
 
+                        } //End while(!this.Moves[0].ValueWasGuess)
                     } //End else
 
                     
@@ -232,6 +235,54 @@ namespace CS4750HW6
 
             return returnVal;
         } //End private void forwardCheck(Node node)
+
+        private bool undoForwardCheck(Move move)
+        {
+            //Declare variables
+            bool returnVal = false;
+
+            move.Node.undo();
+
+            this.Rows[move.Node.RowID].PlacedVals.Remove(move.ValuePlaced);
+            this.Columns[move.Node.ColID].PlacedVals.Remove(move.ValuePlaced);
+            this.Squares[move.Node.SquareID].PlacedVals.Remove(move.ValuePlaced);
+
+            this.Rows[move.Node.RowID].reDetermineDomain();
+            this.Columns[move.Node.ColID].reDetermineDomain();
+            this.Squares[move.Node.SquareID].reDetermineDomain();
+
+            for (int i = 0; i < this.Rows[move.Node.RowID].OpenNodeLocations.Count && returnVal; i++)
+            {
+                if (!determineNodeDomain(this.Rows[move.Node.RowID].OpenNodeLocations[i]))
+                {
+                    returnVal = false;
+                    break;
+                } //End if (!determineNodeDomain(this.Rows[node.RowID].OpenNodeLocations[i]))
+                //this.Board[this.Rows[node.RowID].OpenNodeLocations[i].X, this.Rows[node.RowID].OpenNodeLocations[i].Y].reDetermineDomain();
+            } //End for (int i = 0; i < this.Rows[node.RowID].OpenNodeLocations.Count && returnVal; i++)
+
+            for (int i = 0; i < this.Columns[move.Node.ColID].OpenNodeLocations.Count && returnVal; i++)
+            {
+                if (!determineNodeDomain(this.Columns[move.Node.ColID].OpenNodeLocations[i]))
+                {
+                    returnVal = false;
+                    break;
+                } //End if (!determineNodeDomain(this.Columns[node.ColID].OpenNodeLocations[i]))
+                //this.Board[this.Columns[node.ColID].OpenNodeLocations[i].X, this.Columns[node.ColID].OpenNodeLocations[i].Y].reDetermineDomain();
+            } //End for (int i = 0; i < this.Columns[node.ColID].OpenNodeLocations.Count && returnVal; i++)
+
+            for (int i = 0; i < this.Squares[move.Node.SquareID].OpenNodeLocations.Count && returnVal; i++)
+            {
+                if (!determineNodeDomain(this.Squares[move.Node.SquareID].OpenNodeLocations[i]))
+                {
+                    returnVal = false;
+                    break;
+                } //End if (!determineNodeDomain(this.Squares[node.SquareID].OpenNodeLocations[i]))
+                //this.Board[this.Squares[node.SquareID].OpenNodeLocations[i].X, this.Squares[node.SquareID].OpenNodeLocations[i].Y].reDetermineDomain();
+            } //End for (int i = 0; i < this.Squares[node.SquareID].OpenNodeLocations.Count && returnVal; i++)
+
+            return returnVal;
+        } //End 
 
         private bool determineNodeDomain(Point pos)
         {
