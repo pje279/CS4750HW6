@@ -42,11 +42,11 @@ namespace CS4750HW6
                 if (!this.ValuesTried.Exists(x => x == this.Node.Domain[i] && this.Node.Domain[i] != this.ValuePlaced))
                 {
                     this.PossibleValues.Add(this.Node.Domain[i]);
-                } //End 
-            } //End 
-        } //End 
+                } //End if (!this.ValuesTried.Exists(x => x == this.Node.Domain[i] && this.Node.Domain[i] != this.ValuePlaced))
+            } //End for (int i = 0; i < this.Node.Domain.Count; i++)
+        } //End private void calcPossibleValues()
 
-        private void reCalcPossibleValues()
+        public void reCalcPossibleValues()
         {
             //Declare variables
 
@@ -60,6 +60,20 @@ namespace CS4750HW6
                 } //End 
             } //End 
         } //End 
+
+        public bool setValuePlaced(int val)
+        {
+            //Declare variables
+            bool returnVal = false;
+
+            if (val >= 0 && val <= 9 && this.PossibleValues.Exists(x => x == val))
+            {
+                this.ValuePlaced = val;
+                returnVal = true;
+            } //End if (val >= 0 && val <= 9 && this.PossibleValues.Exists(x => x == val))
+
+            return returnVal;
+        } //End public void setValuePlace(int val)
 
     } //End class Move
 } //End namespace CS4750HW6

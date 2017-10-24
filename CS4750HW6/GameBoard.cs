@@ -54,15 +54,48 @@ namespace CS4750HW6
                     if (setState(node))
                     {
                         this.Turn += 1;
+                        returnVal = true;
                     } //End if (setState(node))
                     else
                     { //Need to backtrack
-                        while(!this.Moves[0].ValueWasGuess)
+
+                        while (!this.Moves[0].ValueWasGuess || (this.Moves[0].ValueWasGuess && this.Moves[0].PossibleValues.Count <= 0))
+                        {
+                            if (!undoForwardCheck(this.Moves[0]))
+                            {
+                                ///Should theoretically never reach this point, assuming everything else leading 
+                                ///up to this point is correct (not necessarily the case, probably not the case).
+                                ///Tzeentch!! Why do you do these things?!
+                            } //End if (!undoForwardCheck(this.Moves[0]))
+
+                            this.Moves.RemoveAt(0);
+                            this.Turn -= 1;
+                        } //End 
+
+                        if (this.Moves[0].PossibleValues.Count > 0)
+                        {
+                            this.Moves[0].ValuesTried.Add(this.Moves[0].ValuePlaced);
+                            //this.Moves[0].reCalcPossibleValues();
+                            if (setStateWithVal(this.Moves[0], this.Moves[0].Node))
+                            {
+                                this.Moves[0].setValuePlaced(this.Moves[0].PossibleValues.Min());
+                                this.Moves[0].reCalcPossibleValues();
+                                this.Turn += 1;
+                                returnVal = true;
+                            } //End 
+                            else
+                            {
+                                ///If this happens I don't even know what's going on anymore. Please Archaon, take 
+                                ///us all away from this nonesense.
+                            } //End else
+                            
+                        } //End 
+                        else
                         {
 
-                        } //End while(!this.Moves[0].ValueWasGuess)
+                        } //End else
+                        
                     } //End else
-
                     
                 } //End 
             } //End if (!isGoalState())
@@ -127,14 +160,6 @@ namespace CS4750HW6
             bool returnVal = false;
             int valBeingPlaced = 0;
             Move move = null;
-            //Node chosenVar = null;
-
-            /**
-            if (isValidPosition(var))
-            {
-                chosenVar = this.Board[var.X, var.Y];
-            } //End if (isValidPosition(var))
-            //*/
 
             if (chosenVar.Domain.Count == 0)
             {
@@ -194,6 +219,68 @@ namespace CS4750HW6
             return returnVal;
         } //End private bool setState(Node chosenVar)
 
+        private bool setStateWithVal(Move prevMove, Node chosenVar)
+        {
+            //Declare variables
+            bool returnVal = false;
+            Move move = null;
+
+            if (prevMove.PossibleValues.Count > 1)
+            {
+                if (!chosenVar.setValue(prevMove.PossibleValues.Min()))
+                {
+                    ///Wat? How'd this happen? Shouldn't be possible. In theory, assuming everything else
+                    ///is working properly, it shouldn't be possible to choose a variable that already has 
+                    ///a value placed in it. That's the only thing that would cause this function to return 
+                    ///false.
+                } //End if (!chosenVar.setValue(chosenVar.Domain[0]))
+                else
+                {
+                    //move = new Move(this.Turn, chosenVar, prevMove.PossibleValues.Min(), true);
+                    //this.Moves.Insert(0, move);
+
+                    this.Rows[chosenVar.RowID].PlacedVals.Add(prevMove.PossibleValues.Min());
+                    this.Columns[chosenVar.ColID].PlacedVals.Add(prevMove.PossibleValues.Min());
+                    this.Squares[chosenVar.SquareID].PlacedVals.Add(prevMove.PossibleValues.Min());
+
+                    forwardCheck(chosenVar);
+
+                    returnVal = true;
+                } //End else
+            } //End if (prevMove.PossibleValues.Count > 1)
+            else if (prevMove.PossibleValues.Count == 1)
+            {
+                if (!chosenVar.setValue(prevMove.PossibleValues.Min()))
+                {
+                    ///Wat? How'd this happen? Shouldn't be possible. In theory, assuming everything else
+                    ///is working properly, it shouldn't be possible to choose a variable that already has 
+                    ///a value placed in it. That's the only thing that would cause this function to return 
+                    ///false.
+                } //End if (!chosenVar.setValue(chosenVar.Domain[0]))
+                else
+                {
+                    //move = new Move(this.Turn, chosenVar, prevMove.PossibleValues.Min(), false);
+                    //this.Moves.Insert(0, move);
+                    //this.GuessedTurns.Add(this.Turn);
+
+                    this.Rows[chosenVar.RowID].PlacedVals.Add(prevMove.PossibleValues.Min());
+                    this.Columns[chosenVar.ColID].PlacedVals.Add(prevMove.PossibleValues.Min());
+                    this.Squares[chosenVar.SquareID].PlacedVals.Add(prevMove.PossibleValues.Min());
+
+                    forwardCheck(chosenVar);
+
+                    returnVal = true;
+                } //End else
+            } //End else if (prevMove.PossibleValues.Count == 1)
+            else
+            {
+                ///I swear Tzeentch must really have something against me if you reach this 
+                ///point.
+            } //End 
+
+            return returnVal;
+        } //End private bool setState(Node chosenVar)
+
         private bool forwardCheck(Node node)
         {
             //Declare variables
@@ -239,7 +326,7 @@ namespace CS4750HW6
         private bool undoForwardCheck(Move move)
         {
             //Declare variables
-            bool returnVal = false;
+            bool returnVal = true;
 
             move.Node.undo();
 

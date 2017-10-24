@@ -38,11 +38,11 @@ namespace CS4750HW6
             //Declare variables
             bool returnVal = false;
 
-            if (this.Value == 0)
+            if (val >= 0 && val <= 9)
             {
                 this.Value = val;
                 returnVal = true;
-            } //End if (this.Value == 0)
+            } //End if (val >= 0 && val <= 9)
 
             this.Domain.Remove(val);
 
