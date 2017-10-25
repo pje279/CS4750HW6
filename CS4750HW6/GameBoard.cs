@@ -20,6 +20,7 @@ namespace CS4750HW6
         private List<Move> Moves { get; set; }
         private List<int> GuessedTurns { get; set; }
         private int Turn { get; set; }
+        private int ActualTurns { get; set; }
 
         /***************CONSTRUCTOR***************/
         public GameBoard(int[,] board)
@@ -32,6 +33,8 @@ namespace CS4750HW6
 
             this.Turn = 0;
             this.GuessedTurns = new List<int>();
+
+            this.ActualTurns = 0;
         } //End 
 
         /***************METHODS***************/
@@ -42,6 +45,8 @@ namespace CS4750HW6
             bool returnVal = false;
             Point nodeChosen = new Point(-1, -1);
             Node node = null;
+
+            this.ActualTurns += 1;
 
             if (!isGoalState())
             {
@@ -59,45 +64,66 @@ namespace CS4750HW6
                     else
                     { //Need to backtrack
 
-                        while (!this.Moves[0].ValueWasGuess || (this.Moves[0].ValueWasGuess && this.Moves[0].PossibleValues.Count <= 0))
+                        if (this.Moves.Count > 0)
                         {
-                            if (!undoForwardCheck(this.Moves[0]))
+                            if (this.ActualTurns >= 45)
                             {
-                                ///Should theoretically never reach this point, assuming everything else leading 
-                                ///up to this point is correct (not necessarily the case, probably not the case).
-                                ///Tzeentch!! Why do you do these things?!
-                            } //End if (!undoForwardCheck(this.Moves[0]))
 
-                            this.Moves.RemoveAt(0);
-                            this.Turn -= 1;
-                        } //End 
+                            }
 
-                        if (this.Moves[0].PossibleValues.Count > 0)
-                        {
-                            this.Moves[0].ValuesTried.Add(this.Moves[0].ValuePlaced);
-                            //this.Moves[0].reCalcPossibleValues();
-                            if (setStateWithVal(this.Moves[0], this.Moves[0].Node))
+                            while (this.Moves.Count > 1 && (!this.Moves[0].ValueWasGuess || (this.Moves[0].ValueWasGuess && this.Moves[0].PossibleValues.Count <= 0)))
                             {
-                                this.Moves[0].setValuePlaced(this.Moves[0].PossibleValues.Min());
-                                this.Moves[0].reCalcPossibleValues();
-                                this.Turn += 1;
-                                returnVal = true;
+                                if (!undoForwardCheck(this.Moves[0]))
+                                {
+                                    ///Should theoretically never reach this point, assuming everything else leading 
+                                    ///up to this point is correct (not necessarily the case, probably not the case).
+                                    ///Tzeentch!! Why do you do these things?!
+                                } //End if (!undoForwardCheck(this.Moves[0])) 
+
+                                this.Moves.RemoveAt(0);
+                                this.Turn -= 1;
+                            } //End 
+
+                            if (this.Moves.Count == 1)
+                            {
+
+                            } //End
+
+                            if (this.Moves[0].PossibleValues.Count > 0)
+                            {
+                                this.Moves[0].ValuesTried.Add(this.Moves[0].ValuePlaced);
+
+                                if (setStateWithVal(this.Moves[0], this.Moves[0].Node))
+                                {
+                                    this.Moves[0].setValuePlaced(this.Moves[0].PossibleValues.Min());
+                                    this.Moves[0].reCalcPossibleValues();
+                                    //this.Turn += 1;
+                                    returnVal = true;
+                                } //End 
+                                else
+                                {
+                                    ///If this happens I don't even know what's going on anymore. Please Archaon, take 
+                                    ///us all away from this nonesense.
+                                } //End else
+
                             } //End 
                             else
                             {
-                                ///If this happens I don't even know what's going on anymore. Please Archaon, take 
-                                ///us all away from this nonesense.
+
                             } //End else
-                            
                         } //End 
                         else
                         {
 
-                        } //End else
+                        }
                         
                     } //End else
                     
                 } //End 
+                else
+                {
+
+                } //End else
             } //End if (!isGoalState())
             
             return returnVal;
@@ -122,8 +148,10 @@ namespace CS4750HW6
 
                 if (possibleGroups.Count > 1)
                 {
-                    Random rand = new Random();
-                    group = possibleGroups[rand.Next(0, possibleGroups.Count - 1)];
+                    //Random rand = new Random();
+                    //group = possibleGroups[rand.Next(0, possibleGroups.Count - 1)];
+
+                    group = possibleGroups[0];
                 } //End if (possibleGroups.Count > 1)
                 else
                 {
@@ -141,8 +169,10 @@ namespace CS4750HW6
 
                     if (possibleNodes.Count > 1)
                     {
-                        Random rand = new Random();
-                        returnPos = possibleNodes[rand.Next(0, possibleNodes.Count - 1)];
+                        //Random rand = new Random();
+                        //returnPos = possibleNodes[rand.Next(0, possibleNodes.Count - 1)];
+
+                        returnPos = possibleNodes[0];
                     } //End if (possibleNodes.Count > 1)
                     else
                     {
@@ -790,6 +820,14 @@ namespace CS4750HW6
                     returnString += "\n";
                 } //End else if (j < this.Board.GetLength(1) - 1)
             } //End for (int j = 0; j < 5; j ++)
+
+            if (this.Moves.Count > 0)
+            {
+                returnString += "Last value changed: " + this.Moves[0].ValuePlaced.ToString();
+                returnString += "\n\tAt node: " + this.Moves[0].Node.Position.ToString();
+                returnString += "\n\tWas guess: " + this.Moves[0].ValueWasGuess.ToString();
+                returnString += "\n\tTurn: " + this.ActualTurns.ToString();
+            } //End 
 
             return returnString;
         } //End public string displayBoard()

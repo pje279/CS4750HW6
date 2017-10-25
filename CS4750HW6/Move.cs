@@ -39,7 +39,7 @@ namespace CS4750HW6
 
             for (int i = 0; i < this.Node.Domain.Count; i++)
             {
-                if (!this.ValuesTried.Exists(x => x == this.Node.Domain[i] && this.Node.Domain[i] != this.ValuePlaced))
+                if (!this.ValuesTried.Exists(x => x == this.Node.Domain[i] || this.Node.Domain[i] != this.ValuePlaced))
                 {
                     this.PossibleValues.Add(this.Node.Domain[i]);
                 } //End if (!this.ValuesTried.Exists(x => x == this.Node.Domain[i] && this.Node.Domain[i] != this.ValuePlaced))

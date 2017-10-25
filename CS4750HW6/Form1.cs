@@ -124,6 +124,7 @@ namespace CS4750HW6
             this.Puzzle1Started = false;
             this.Puzzle2Started = false;
             this.Puzzle3Started = false;
+            this.rtxtDisplay.Text = "";
         } //End private void reset()
 
         /***************EVENTS***************/
@@ -139,6 +140,21 @@ namespace CS4750HW6
                 this.Board1 = new GameBoard(this.Puzzle1);
                 this.Puzzle1Started = true;
             } //End if (!this.Puzzle1Started)
+
+            /*
+            int x = 0;
+            while (!this.Board1.isGoalState())
+            {
+                x += 1;
+                if (!this.Board1.backtrackingSearch())
+                {
+
+                } //End
+                displayData(this.Board1.displayBoard());
+                
+
+            } //End 
+            //*/
 
             this.Board1.backtrackingSearch();
             displayData(this.Board1.displayBoard());
