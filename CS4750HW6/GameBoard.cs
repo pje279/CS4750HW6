@@ -91,6 +91,14 @@ namespace CS4750HW6
 
                             if (this.Moves[0].PossibleValues.Count > 0)
                             {
+                                this.Rows[this.Moves[0].Node.RowID].PlacedVals.Remove(this.Moves[0].ValuePlaced);
+                                this.Columns[this.Moves[0].Node.ColID].PlacedVals.Remove(this.Moves[0].ValuePlaced);
+                                this.Squares[this.Moves[0].Node.SquareID].PlacedVals.Remove(this.Moves[0].ValuePlaced);
+
+                                this.Rows[this.Moves[0].Node.RowID].reDetermineDomain();
+                                this.Columns[this.Moves[0].Node.ColID].reDetermineDomain();
+                                this.Squares[this.Moves[0].Node.SquareID].reDetermineDomain();
+
                                 this.Moves[0].ValuesTried.Add(this.Moves[0].ValuePlaced);
 
                                 if (setStateWithVal(this.Moves[0], this.Moves[0].Node))
@@ -359,6 +367,8 @@ namespace CS4750HW6
             bool returnVal = true;
 
             move.Node.undo();
+
+            //this.Rows[move.Node.RowID].PlacedVals.Rem
 
             this.Rows[move.Node.RowID].PlacedVals.Remove(move.ValuePlaced);
             this.Columns[move.Node.ColID].PlacedVals.Remove(move.ValuePlaced);
