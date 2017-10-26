@@ -43,14 +43,14 @@
             this.rtxtDisplay.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.rtxtDisplay.Location = new System.Drawing.Point(12, 12);
             this.rtxtDisplay.Name = "rtxtDisplay";
-            this.rtxtDisplay.Size = new System.Drawing.Size(383, 341);
+            this.rtxtDisplay.Size = new System.Drawing.Size(383, 383);
             this.rtxtDisplay.TabIndex = 0;
             this.rtxtDisplay.Text = "";
             // 
             // btnPuzzle1
             // 
             this.btnPuzzle1.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
-            this.btnPuzzle1.Location = new System.Drawing.Point(93, 382);
+            this.btnPuzzle1.Location = new System.Drawing.Point(93, 424);
             this.btnPuzzle1.Name = "btnPuzzle1";
             this.btnPuzzle1.Size = new System.Drawing.Size(75, 23);
             this.btnPuzzle1.TabIndex = 1;
@@ -61,7 +61,7 @@
             // btnPuzzle2
             // 
             this.btnPuzzle2.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
-            this.btnPuzzle2.Location = new System.Drawing.Point(174, 382);
+            this.btnPuzzle2.Location = new System.Drawing.Point(174, 424);
             this.btnPuzzle2.Name = "btnPuzzle2";
             this.btnPuzzle2.Size = new System.Drawing.Size(75, 23);
             this.btnPuzzle2.TabIndex = 2;
@@ -72,7 +72,7 @@
             // btnPuzzle3
             // 
             this.btnPuzzle3.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
-            this.btnPuzzle3.Location = new System.Drawing.Point(255, 382);
+            this.btnPuzzle3.Location = new System.Drawing.Point(255, 424);
             this.btnPuzzle3.Name = "btnPuzzle3";
             this.btnPuzzle3.Size = new System.Drawing.Size(75, 23);
             this.btnPuzzle3.TabIndex = 3;
@@ -83,7 +83,7 @@
             // btnReset
             // 
             this.btnReset.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
-            this.btnReset.Location = new System.Drawing.Point(12, 382);
+            this.btnReset.Location = new System.Drawing.Point(12, 424);
             this.btnReset.Name = "btnReset";
             this.btnReset.Size = new System.Drawing.Size(75, 23);
             this.btnReset.TabIndex = 4;
@@ -95,7 +95,7 @@
             // 
             this.chkSingleStep.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
             this.chkSingleStep.AutoSize = true;
-            this.chkSingleStep.Location = new System.Drawing.Point(12, 359);
+            this.chkSingleStep.Location = new System.Drawing.Point(12, 401);
             this.chkSingleStep.Name = "chkSingleStep";
             this.chkSingleStep.Size = new System.Drawing.Size(80, 17);
             this.chkSingleStep.TabIndex = 5;
@@ -106,7 +106,7 @@
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(407, 417);
+            this.ClientSize = new System.Drawing.Size(407, 459);
             this.Controls.Add(this.chkSingleStep);
             this.Controls.Add(this.btnReset);
             this.Controls.Add(this.btnPuzzle3);

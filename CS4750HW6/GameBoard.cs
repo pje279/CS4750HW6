@@ -172,10 +172,10 @@ namespace CS4750HW6
 
                 if (possibleGroups.Count > 1)
                 {
-                    //Random rand = new Random();
-                    //group = possibleGroups[rand.Next(0, possibleGroups.Count - 1)];
+                    Random rand = new Random();
+                    group = possibleGroups[rand.Next(0, possibleGroups.Count - 1)];
 
-                    group = possibleGroups[0];
+                    //group = possibleGroups[0];
                 } //End if (possibleGroups.Count > 1)
                 else
                 {
@@ -193,8 +193,8 @@ namespace CS4750HW6
 
                     if (possibleNodes.Count > 1)
                     {
-                        //Random rand = new Random();
-                        //returnPos = possibleNodes[rand.Next(0, possibleNodes.Count - 1)];
+                        Random rand = new Random();
+                        returnPos = possibleNodes[rand.Next(0, possibleNodes.Count - 1)];
 
                         returnPos = possibleNodes[0];
                     } //End if (possibleNodes.Count > 1)

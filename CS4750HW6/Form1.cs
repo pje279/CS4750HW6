@@ -27,15 +27,15 @@ namespace CS4750HW6
             { 0, 3, 0, 0, 4, 0, 5, 0, 0 },
             { 0, 0, 0, 0, 3, 8, 0, 0, 0 } };
         private int[,] puzzle = {
-            { 0, 0, 4 }, { 0, 0, 6 }, { 1, 5, 0 },
-            { 0, 0, 0 }, { 0, 0, 0 }, { 2, 6, 5 },
-            { 0, 0, 0 }, { 0, 3, 0 }, { 0, 0, 0 },
-            { 0, 6, 0 }, { 0, 0, 0 }, { 0, 0, 0 },
-            { 1, 8, 0 }, { 0, 0, 9 }, { 4, 0, 0 },
-            { 0, 1, 5 }, { 0, 4, 0 }, { 0, 3, 8 },
-            { 8, 1, 0 }, { 0, 0, 0 }, { 0, 0, 9 },
-            { 0, 3, 0 }, { 4, 2, 0 }, { 9, 0, 0 },
-            { 0, 0, 3 }, { 5, 0, 0 }, { 0, 0, 0 } };
+            { 0, 0, 0, 0, 0, 0, 0, 0, 0 },
+            { 0, 0, 0, 0, 0, 0, 0, 0, 0 },
+            { 0, 0, 0, 0, 0, 0, 0, 0, 0 },
+            { 0, 0, 0, 0, 0, 0, 0, 0, 0 },
+            { 0, 0, 0, 0, 0, 0, 0, 0, 0 },
+            { 0, 0, 0, 0, 0, 0, 0, 0, 0 },
+            { 0, 0, 0, 0, 0, 0, 0, 0, 0 },
+            { 0, 0, 0, 0, 0, 0, 0, 0, 0 },
+            { 0, 0, 0, 0, 0, 0, 0, 0, 0 } };
         private int[,] puzzle2 = {
             { 0, 0, 1, 2, 0, 5, 0, 0, 0 },
             { 0, 0, 0, 0, 4, 0, 0, 6, 0 },
@@ -95,12 +95,9 @@ namespace CS4750HW6
             this.Puzzle2Started = false;
             this.Puzzle3Started = false;
 
-
-
             this.Board1 = new GameBoard(this.Puzzle1);
             this.Board2 = new GameBoard(this.Puzzle2);
             this.Board3 = new GameBoard(this.Puzzle3);
-            displayData(this.Board1.displayBoard());
         } //End public Form1()
 
         /***************METHODS***************/
@@ -112,7 +109,7 @@ namespace CS4750HW6
 
         public void displayDataAppend(string data)
         {
-            this.rtxtDisplay.Text += "\n\n" + data;
+            this.rtxtDisplay.Text += "\n" + data;
         } //End public void displayData(string data)
 
         public void displayMillisecondsElapsed()
@@ -137,59 +134,177 @@ namespace CS4750HW6
 
         private void btnPuzzle1_Click(object sender, EventArgs e)
         {
-            if (!this.Puzzle1Started)
+            //Declare variables
+            bool finishedSuccessfully = true;
+
+            if (!this.Puzzle1Started || this.Board1.isGoalState())
             {
                 this.Board1 = new GameBoard(this.Puzzle1);
                 this.Puzzle1Started = true;
-            } //End if (!this.Puzzle1Started)
-            
-            int x = 0;
-            while (!this.Board1.isGoalState())
+            } //End if (!this.Puzzle1Started || this.Board1.isGoalState())
+
+            this.timer = Stopwatch.StartNew();
+
+            if (this.chkSingleStep.Checked)
             {
-                x += 1;
-                displayData(this.Board1.displayBoard());
                 this.Board1.backtrackingSearch();
             } //End 
+            else
+            {
+                while (!this.Board1.isGoalState())
+                {
+                    if (this.timer.ElapsedMilliseconds >= 300000)
+                    {
+                        finishedSuccessfully = false;
+                        break;
+                    } //End if (this.timer.ElapsedMilliseconds >= 300000)
+
+                    //displayData(this.Board1.displayBoard());
+                    this.Board1.backtrackingSearch();
+                } //End while (!this.Board1.isGoalState())
+            } //End else
+
+            this.timer.Stop();
 
             displayData(this.Board1.displayBoard());
+
+            if (finishedSuccessfully)
+            {
+                if (this.chkSingleStep.Checked)
+                {
+                    if (this.Board1.isGoalState())
+                    {
+                        displayDataAppend("Found a solution!");
+                    } //End if (this.Board1.isGoalState())
+                } //End if (this.chkSingleStep.Checked)
+                else
+                {
+                    displayDataAppend("Found a solution!");
+                } //End else
+            } //End if (finishedSuccessfully)
+            else
+            {
+                displayDataAppend("No solution found in time");
+            } //End else
+
+            displayDataAppend("Time elapsed: " + this.timer.ElapsedMilliseconds.ToString() + " milliseconds");
         } //End private void btnPuzzle1_Click(object sender, EventArgs e)
 
         private void btnPuzzle2_Click(object sender, EventArgs e)
         {
-            if (!this.Puzzle2Started)
+            //Declare variables
+            bool finishedSuccessfully = true;
+
+            if (!this.Puzzle2Started || this.Board2.isGoalState())
             {
                 this.Board2 = new GameBoard(this.Puzzle2);
                 this.Puzzle2Started = true;
-            } //End if (!this.Puzzle1Started)
+            } //End if (!this.Puzzle1Started || this.Board2.isGoalState())
 
-            int x = 0;
-            while (!this.Board2.isGoalState())
+            this.timer = Stopwatch.StartNew();
+
+            if (this.chkSingleStep.Checked)
             {
-                x += 1;
-                displayData(this.Board2.displayBoard());
                 this.Board2.backtrackingSearch();
-            } //End 
+            } //End if (this.chkSingleStep.Checked)
+            else
+            {
+                while (!this.Board2.isGoalState())
+                {
+                    if (this.timer.ElapsedMilliseconds >= 300000)
+                    {
+                        finishedSuccessfully = false;
+                        break;
+                    } //End if (this.timer.ElapsedMilliseconds >= 300000)
+
+                    //displayData(this.Board2.displayBoard());
+                    this.Board2.backtrackingSearch();
+                } //End while (!this.Board2.isGoalState())
+            } //End else
+
+            this.timer.Stop();
 
             displayData(this.Board2.displayBoard());
+
+            if (finishedSuccessfully)
+            {
+                if (this.chkSingleStep.Checked)
+                {
+                    if (this.Board2.isGoalState())
+                    {
+                        displayDataAppend("Found a solution!");
+                    } //End if (this.Board2.isGoalState())
+                } //End if (this.chkSingleStep.Checked)
+                else
+                {
+                    displayDataAppend("Found a solution!");
+                } //End else
+            } //End if (finishedSuccessfully)
+            else
+            {
+                displayDataAppend("No solution found in time");
+            } //End else
+
+            displayDataAppend("Time elapsed: " + this.timer.ElapsedMilliseconds.ToString() + " milliseconds");
         } //End private void btnPuzzle2_Click(object sender, EventArgs e)
 
         private void btnPuzzle3_Click(object sender, EventArgs e)
         {
-            if (!this.Puzzle3Started)
+            //Declare variables
+            bool finishedSuccessfully = true;
+
+            this.timer = Stopwatch.StartNew();
+            if (!this.Puzzle3Started || this.Board3.isGoalState())
             {
                 this.Board3 = new GameBoard(this.Puzzle3);
                 this.Puzzle3Started = true;
-            } //End if (!this.Puzzle1Started)
+            } //End if (!this.Puzzle1Started || this.Board3.isGoalState())
 
-            int x = 0;
-            while (!this.Board3.isGoalState())
+            this.timer = Stopwatch.StartNew();
+
+            if (this.chkSingleStep.Checked)
             {
-                x += 1;
-                displayData(this.Board3.displayBoard());
                 this.Board3.backtrackingSearch();
-            } //End 
+            } //End if (this.chkSingleStep.Checked)
+            else
+            {
+                while (!this.Board3.isGoalState())
+                {
+                    if (this.timer.ElapsedMilliseconds >= 300000)
+                    {
+                        finishedSuccessfully = false;
+                        break;
+                    } //End if (this.timer.ElapsedMilliseconds >= 300000)
+
+                    //displayData(this.Board3.displayBoard());
+                    this.Board3.backtrackingSearch();
+                } //End while (!this.Board3.isGoalState())
+            } //End else
+
+            this.timer.Stop();
 
             displayData(this.Board3.displayBoard());
+
+            if (finishedSuccessfully)
+            {
+                if (this.chkSingleStep.Checked)
+                {
+                    if (this.Board3.isGoalState())
+                    {
+                        displayDataAppend("Found a solution!");
+                    } //End if (this.Board3.isGoalState())
+                } //End if (this.chkSingleStep.Checked)
+                else
+                {
+                    displayDataAppend("Found a solution!");
+                } //End else
+            } //End if (finishedSuccessfully)
+            else
+            {
+                displayDataAppend("No solution found in time");
+            } //End else
+
+            displayDataAppend("Time elapsed: " + this.timer.ElapsedMilliseconds.ToString() + " milliseconds");
         } //End private void btnPuzzle3_Click(object sender, EventArgs e)
     } //End public partial class Form1 : Form
 } //End namespace CS4750HW6
