@@ -56,8 +56,24 @@ namespace CS4750HW6
                 {
                     node = this.Board[nodeChosen.X, nodeChosen.Y];
 
+                    if (node.Position.X == 0 || node.Position.Y == 8 || node.SquareID == 6)
+                    {
+                        if (node.Position.X == 0 && node.Position.Y == 8)
+                        {
+                            if (!node.Domain.Exists(x => x == 2))
+                            {
+
+                            }
+                        } //End 
+                    }
+
                     if (setState(node))
                     {
+                        if (node.Position.X == 0 || node.Position.Y == 8 || node.SquareID == 6)
+                        {
+
+                        }
+
                         this.Turn += 1;
                         returnVal = true;
                     } //End if (setState(node))
@@ -332,8 +348,8 @@ namespace CS4750HW6
             {
                 if (!determineNodeDomain(this.Rows[node.RowID].OpenNodeLocations[i]))
                 {
-                    returnVal = false;
-                    break;
+                    //returnVal = false;
+                    //break;
                 } //End if (!determineNodeDomain(this.Rows[node.RowID].OpenNodeLocations[i]))
                 //this.Board[this.Rows[node.RowID].OpenNodeLocations[i].X, this.Rows[node.RowID].OpenNodeLocations[i].Y].reDetermineDomain();
             } //End for (int i = 0; i < this.Rows[node.RowID].OpenNodeLocations.Count && returnVal; i++)
@@ -342,8 +358,8 @@ namespace CS4750HW6
             {
                 if (!determineNodeDomain(this.Columns[node.ColID].OpenNodeLocations[i]))
                 {
-                    returnVal = false;
-                    break;
+                    //returnVal = false;
+                    //break;
                 } //End if (!determineNodeDomain(this.Columns[node.ColID].OpenNodeLocations[i]))
                 //this.Board[this.Columns[node.ColID].OpenNodeLocations[i].X, this.Columns[node.ColID].OpenNodeLocations[i].Y].reDetermineDomain();
             } //End for (int i = 0; i < this.Columns[node.ColID].OpenNodeLocations.Count && returnVal; i++)
@@ -352,8 +368,8 @@ namespace CS4750HW6
             {
                 if (!determineNodeDomain(this.Squares[node.SquareID].OpenNodeLocations[i]))
                 {
-                    returnVal = false;
-                    break;
+                    //returnVal = false;
+                    //break;
                 } //End if (!determineNodeDomain(this.Squares[node.SquareID].OpenNodeLocations[i]))
                 //this.Board[this.Squares[node.SquareID].OpenNodeLocations[i].X, this.Squares[node.SquareID].OpenNodeLocations[i].Y].reDetermineDomain();
             } //End for (int i = 0; i < this.Squares[node.SquareID].OpenNodeLocations.Count && returnVal; i++)
@@ -974,7 +990,7 @@ namespace CS4750HW6
 
                     if (j < 1)
                     {
-                        if (!isCompleteRow(new Point(i, j)) || isCompleteColumn(new Point(i, j)))
+                        if (!isCompleteRow(new Point(i, j)) || !isCompleteColumn(new Point(i, j)))
                         {
                             returnVal = false;
                             quit = true;

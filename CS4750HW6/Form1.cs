@@ -37,25 +37,25 @@ namespace CS4750HW6
             { 0, 3, 0 }, { 4, 2, 0 }, { 9, 0, 0 },
             { 0, 0, 3 }, { 5, 0, 0 }, { 0, 0, 0 } };
         private int[,] puzzle2 = {
-            { 0, 0, 4, 0, 6, 0, 8, 1, 0 },
-            { 0, 0, 6, 0, 0, 0, 0, 0, 0 },
-            { 1, 5, 0, 0, 0, 0, 0, 0, 9 },
-            { 0, 0, 0, 1, 8, 0, 0, 3, 0 },
-            { 0, 0, 0, 0, 0, 9, 4, 2, 0 },
-            { 2, 6, 5, 4, 0, 0, 9, 0, 0 },
-            { 0, 0, 0, 0, 1, 5, 0, 0, 3 },
-            { 0, 3, 0, 0, 4, 0, 5, 0, 0 },
-            { 0, 0, 0, 0, 3, 8, 0, 0, 0 } };
+            { 0, 0, 1, 2, 0, 5, 0, 0, 0 },
+            { 0, 0, 0, 0, 4, 0, 0, 6, 0 },
+            { 5, 2, 9, 0, 0, 0, 0, 0, 0 },
+            { 0, 0, 0, 0, 0, 0, 6, 1, 0 },
+            { 1, 0, 0, 3, 0, 0, 0, 0, 7 },
+            { 0, 4, 0, 0, 0, 7, 3, 0, 0 },
+            { 0, 0, 2, 0, 7, 0, 0, 0, 0 },
+            { 0, 3, 0, 0, 0, 0, 0, 0, 5 },
+            { 0, 0, 6, 0, 0, 1, 0, 0, 0 } };
         private int[,] puzzle3 = {
-            { 0, 0, 4, 0, 6, 0, 8, 1, 0 },
-            { 0, 0, 6, 0, 0, 0, 0, 0, 0 },
-            { 1, 5, 0, 0, 0, 0, 0, 0, 9 },
-            { 0, 0, 0, 1, 8, 0, 0, 3, 0 },
-            { 0, 0, 0, 0, 0, 9, 4, 2, 0 },
-            { 2, 6, 5, 4, 0, 0, 9, 0, 0 },
-            { 0, 0, 0, 0, 1, 5, 0, 0, 3 },
-            { 0, 3, 0, 0, 4, 0, 5, 0, 0 },
-            { 0, 0, 0, 0, 3, 8, 0, 0, 0 } };
+            { 6, 0, 0, 3, 0, 0, 0, 0, 1 },
+            { 7, 2, 9, 0, 0, 0, 0, 0, 0 },
+            { 0, 5, 0, 0, 0, 0, 8, 0, 6 },
+            { 0, 0, 5, 0, 0, 4, 6, 0, 0 },
+            { 0, 0, 6, 8, 0, 7, 0, 0, 5 },
+            { 0, 0, 0, 0, 0, 0, 0, 0, 0 },
+            { 0, 0, 2, 9, 8, 0, 0, 0, 0 },
+            { 0, 0, 0, 0, 0, 0, 9, 1, 7 },
+            { 0, 0, 0, 0, 1, 0, 0, 0, 0 } };
 
         //Properties
         int[,] Puzzle1
@@ -98,6 +98,8 @@ namespace CS4750HW6
 
 
             this.Board1 = new GameBoard(this.Puzzle1);
+            this.Board2 = new GameBoard(this.Puzzle2);
+            this.Board3 = new GameBoard(this.Puzzle3);
             displayData(this.Board1.displayBoard());
         } //End public Form1()
 
@@ -140,34 +142,54 @@ namespace CS4750HW6
                 this.Board1 = new GameBoard(this.Puzzle1);
                 this.Puzzle1Started = true;
             } //End if (!this.Puzzle1Started)
-
-            /*
+            
             int x = 0;
             while (!this.Board1.isGoalState())
             {
                 x += 1;
-                if (!this.Board1.backtrackingSearch())
-                {
-
-                } //End
                 displayData(this.Board1.displayBoard());
-                
-
+                this.Board1.backtrackingSearch();
             } //End 
-            //*/
 
-            this.Board1.backtrackingSearch();
             displayData(this.Board1.displayBoard());
         } //End private void btnPuzzle1_Click(object sender, EventArgs e)
 
         private void btnPuzzle2_Click(object sender, EventArgs e)
         {
+            if (!this.Puzzle2Started)
+            {
+                this.Board2 = new GameBoard(this.Puzzle2);
+                this.Puzzle2Started = true;
+            } //End if (!this.Puzzle1Started)
 
+            int x = 0;
+            while (!this.Board2.isGoalState())
+            {
+                x += 1;
+                displayData(this.Board2.displayBoard());
+                this.Board2.backtrackingSearch();
+            } //End 
+
+            displayData(this.Board2.displayBoard());
         } //End private void btnPuzzle2_Click(object sender, EventArgs e)
 
         private void btnPuzzle3_Click(object sender, EventArgs e)
         {
+            if (!this.Puzzle3Started)
+            {
+                this.Board3 = new GameBoard(this.Puzzle3);
+                this.Puzzle3Started = true;
+            } //End if (!this.Puzzle1Started)
 
+            int x = 0;
+            while (!this.Board3.isGoalState())
+            {
+                x += 1;
+                displayData(this.Board3.displayBoard());
+                this.Board3.backtrackingSearch();
+            } //End 
+
+            displayData(this.Board3.displayBoard());
         } //End private void btnPuzzle3_Click(object sender, EventArgs e)
     } //End public partial class Form1 : Form
 } //End namespace CS4750HW6
